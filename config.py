@@ -1,7 +1,6 @@
 import requests
 from storage import *
 
-
 def web_h(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook):
     try:
         webhook = input("Introduzca su WEBHOOK_URL para poder notificar en discord: ")
