@@ -1,16 +1,13 @@
 from storage import guardar_datos
 from datetime import datetime
-from clases import *
-
+from clases import TareaRutina, Tarea
 
 def menu_f():
-    print("\t Gestor de tareas\t ")
-    print("1) Agregar tarea \t         2) Ver tareas")
-    print("3) Buscar tarea \t         4) Editar tarea")
-    print("5) Marcas tarea completa \t 6) Ver tareas pendientes")
-    print("7) Ver tareas completas \t 8) Historial")
-    print("9) Elimar tarea  \t         10) Estadisticas")
-    print("11) Introducir  o editar WEBHOOK_URL \t 12) salir ")
+    print("1) Gestionar Tareas")
+    print("2) Historial")
+    print("3) Estadisticas")
+    print("4) Configuraciones")
+    print("5) Salir")
     while True:
         try:
             opcion = int(input("Introduzca una opción deseada: "))
@@ -274,8 +271,11 @@ def ver_tareas_completas(tareas,puntos):
 
 
 def historial_f(historial):
-    for m in historial:
-        print("-",m)
+    if len(historial) == 0:
+        print("No hay movimientos registrado\n")
+    else:
+        for m in historial:
+            print("-",m,"\n")
 
 def elimnar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook):
     print("Ha seleccionado eliminar")

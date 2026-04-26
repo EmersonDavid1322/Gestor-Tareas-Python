@@ -1,5 +1,5 @@
 import requests
-from storage import *
+from storage import guardar_datos
 
 def web_h(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook):
     try:
