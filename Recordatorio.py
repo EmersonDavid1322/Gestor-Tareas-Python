@@ -27,7 +27,7 @@ def revisar_y_enviar():
                                 mensaje_pre += f"\n - */{eleccion}/*"
                             else:
                                 mensaje_pre += f"\n - */La fortaleza del hombre radica en el dominio de su mente/*"
-                    pendientes.append(mensaje_pre)
+                        pendientes.append(mensaje_pre)
         if pendientes:
             mensaje_texto = "Tareas pendientes:\n" + "\n".join(pendientes)
         else:
