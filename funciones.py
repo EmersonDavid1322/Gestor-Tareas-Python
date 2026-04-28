@@ -100,22 +100,22 @@ def datos_tarea():
         else:
             break
     while True:
+        dias_verficados = []
         confimacion = input("\n (Por defecto todos los dias)\n¿Desea modificar los dias de esta tarea? (S/N): ").lower()
         if confimacion in ("s","si"):
 
             dias_validos = ["lunes","martes","miércoles","jueves","viernes","sabado","domingo"]
-            dias_verficados = []
 
             entrada = input("(Separe cada dia con una ',')\nIntroduzca los dias que desea: ").strip().lower().split(",")
             for dia in entrada:
                 if dia in dias_validos:
                     dias_verficados.append(dia)
+                    tarea_añadir.dias = dias_verficados
                 else:
                     print(f"¡Cuidado! '{dia}' no existe y sera ignorado\n")
         else:
             print("Se mantuvo la configuración por defecto")
-        print(f"Dias agregados para esta tarea: {dias_verficados}")
-        tarea_añadir.dias = dias_verficados
+            print(f"Dias agregados para esta tarea: {tarea_añadir.dias}")
         break
     return tarea_añadir
 
