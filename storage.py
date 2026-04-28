@@ -3,8 +3,7 @@ import os
 from clases import Tarea, TareaRutina
 os.makedirs("data", exist_ok=True)
 
-
-def guardar_datos(tareas,historial,puntos,tareas_rutina,registro_cumplidos,webhook): 
+def guardar_datos(tareas,historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase): 
 
     tareas_json = []
     for tarea in tareas:
@@ -14,11 +13,13 @@ def guardar_datos(tareas,historial,puntos,tareas_rutina,registro_cumplidos,webho
     for rutina in tareas_rutina:
         tareas_rutina_json.append(rutina.a_diccionario())
 
+
     with open("data/datos_gestor.json", "w") as f:
         json.dump({
             "tareas": tareas_json,
             "rutinas": tareas_rutina_json,
-            "registro": registro_cumplidos
+            "registro": registro_cumplidos,
+            "Frases": lista_frases
         }, f, indent=4, ensure_ascii=False)
 
     with open("data/historial.json", "w") as f: 
@@ -27,14 +28,19 @@ def guardar_datos(tareas,historial,puntos,tareas_rutina,registro_cumplidos,webho
     with open("data/puntaje.json","w") as f:
         json.dump(puntos,f, indent=4, ensure_ascii=False)
     
+    confi_data = {
+        "webhook_url": webhook,
+        "usar_frase_l": usar_frase
+    }
     with open("data/config.json","w") as f:
-        json.dump(webhook,f, indent=4, ensure_ascii=False)
+        json.dump( confi_data, f, indent=4, ensure_ascii=False)
 
 def cargar_datos():
     try:
         with open("data/datos_gestor.json", "r") as f:
             datos = json.load(f)
-            
+
+            lista_frases = datos["Frases"]
             tareas = []
             tareas_rutina = []
 
@@ -62,13 +68,18 @@ def cargar_datos():
             puntos = json.load(f)
         
         with open("data/config.json", "r") as f: 
-            webhook = json.load(f)
+            confi_data = json.load(f)
+            
+            webhook = confi_data["webhook_url"]
+            usar_frase = confi_data["usar_frase_l"]
 
     except (FileNotFoundError, json.JSONDecodeError):
         tareas = []
         tareas_rutina = []
         historial = []
         registro_cumplidos = []
+        lista_frases = []
         webhook = ""
+        usar_frase = True
         puntos = 0
-    return tareas,historial,puntos,tareas_rutina,registro_cumplidos,webhook
+    return tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase

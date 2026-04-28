@@ -20,7 +20,6 @@ class Tarea:
             "prioridad": self.prioridad,
             "tipo": self.tipo
         }
-    
 class TareaRutina(Tarea):
     def __init__(self, nombre, prioridad):
         super().__init__(nombre, prioridad)
@@ -35,4 +34,3 @@ class TareaRutina(Tarea):
         dicc = super().a_diccionario()
         dicc["racha"] = self.racha
         return dicc
-    

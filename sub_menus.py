@@ -1,7 +1,8 @@
 from funciones import *
 from storage import *
 from config import *
-tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook = cargar_datos()
+
+tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase = cargar_datos()
 
 def gestor_tareas():
     while True:
@@ -22,11 +23,10 @@ def gestor_tareas():
             continue
         
         if opcion == 1:
-            agregar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook)
+            agregar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
         
         elif opcion == 2:
-            marcar_tarea_completa(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook)
-        
+            marcar_tarea_completa(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
         elif opcion == 3:
             try:
                 print("1) ver tareas pendientes \t 2) ver tareas completas \n")
@@ -44,13 +44,13 @@ def gestor_tareas():
                 ver_tareas_registros(tareas,tareas_rutina,registro_cumplidos)
         
         elif opcion == 4:
-            buscar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook)
+            buscar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
         
         elif opcion == 5:
-            editar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook)
+            editar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
         
         elif opcion == 6:
-            elimnar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook)
+            elimnar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
         
         elif opcion == 7:
             print("Volviendo al Menu Principal...\n")
@@ -58,7 +58,9 @@ def gestor_tareas():
         else:
             print("Valor no valido")
 
+
 def configuracion():
+
     while True:
         try:
             print("-----Configuraciones-----")
@@ -73,18 +75,21 @@ def configuracion():
             continue
 
         if opcion == 1:
-            tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook = cargar_datos()
+            tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook,lista_frases,usar_frase = cargar_datos()
+
             if webhook == "":
                 print("No hay WEBHOOK registrado \n")
-                web_h(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook)
+                web_h()
             else:
                 confirmacion = input(f"Su webhook actual es: \n{webhook} \n¿Desea editarlo? (S/N): ").lower()
                 if confirmacion in ("s","si"):
-                    web_h(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook)
-                else:
-                    print("Volviendo... \n")
+                    web_h()
         
         elif opcion == 2:
+            agregar_frase_nueva()
+        
+        elif opcion == 3:
+            opcion_frase()
             print("Opción aun no implementada\n")
         
         elif opcion == 3:

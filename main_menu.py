@@ -2,7 +2,7 @@ from funciones import *
 from config import *
 from storage import cargar_datos
 from sub_menus import *
-tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook = cargar_datos()
+tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase = cargar_datos()
 
 while True:
     opcion = menu_f()
