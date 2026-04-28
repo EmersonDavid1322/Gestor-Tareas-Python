@@ -3,7 +3,8 @@ from storage import cargar_datos
 import os
 from datetime import datetime
 import random   
-os.chdir("/home/emersondavid/Documentos/P/Phyton/Programa_De_Practica/Proyectos/Gestor_Tareas")
+ruta_del_script = os.path.dirname(os.path.abspath(__file__))
+os.chdir(ruta_del_script)
 
 def revisar_y_enviar():
     try:
