@@ -33,6 +33,7 @@ def agregar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,web
             tareas_rutina.append(tarea_datos)
             historial.append("Se añadió la tarea rutinaria: " + tarea_datos.nombre)
             guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+            print("Tarea rutina agregada correctamente")
             return
         else:
             tareas.append(tarea_datos)
@@ -75,11 +76,8 @@ def datos_tarea():
             tipo_tarea = int(input(" 1)Unica \n 2)Rutina \n Tipo de tarea: "))
             if tipo_tarea == 1:
                 tarea_añadir = Tarea(nombre,tarea_prioridad )
-                tarea_añadir.tipo = "Unica"
             elif tipo_tarea == 2:
                 tarea_añadir = TareaRutina(nombre,tarea_prioridad)
-                tarea_añadir.tipo = "Rutina"
-                tarea_añadir.racha = 0
             else:
                 print("Introduzca un digito valido")
                 continue
@@ -101,6 +99,24 @@ def datos_tarea():
                 print('Hora incorrecta, por favor ingrese en formato "HH:MM" ')
         else:
             break
+    while True:
+        confimacion = input("\n (Por defecto todos los dias)\n¿Desea modificar los dias de esta tarea? (S/N): ").lower()
+        if confimacion in ("s","si"):
+
+            dias_validos = ["lunes","martes","miércoles","jueves","viernes","sabado","domingo"]
+            dias_verficados = []
+
+            entrada = input("(Separe cada dia con una ',')\nIntroduzca los dias que desea: ").strip().lower().split(",")
+            for dia in entrada:
+                if dia in dias_validos:
+                    dias_verficados.append(dia)
+                else:
+                    print(f"¡Cuidado! '{dia}' no existe y sera ignorado\n")
+        else:
+            print("Se mantuvo la configuración por defecto")
+        print(f"Dias agregados para esta tarea: {dias_verficados}")
+        tarea_añadir.dias = dias_verficados
+        break
     return tarea_añadir
 
 def ver_tareas_registros(tareas,tareas_rutina,registro_cumplidos):

@@ -8,21 +8,26 @@ os.chdir(ruta_del_script)
 
 def revisar_y_enviar():
     try:
-        tareas, historial, puntos, tareas_rutina,registro_cumplidos, webhook, lista_frases, usar_frase = cargar_datos()
-
         hora_actual = datetime.now().strftime("%H:%M")
         pendientes = []
+        tareas, historial, puntos, tareas_rutina,registro_cumplidos, webhook, lista_frases, usar_frase = cargar_datos()
+
+        dias_semana = ["lunes","martes","miércoles","jueves","viernes","sabado","domingo"]
+        indice_hoy = datetime.now().weekday()
+        dia_actual_texto = dias_semana[indice_hoy]
+        
         for prioridad in ["Alta","Media","Baja"]:
             for t in tareas_rutina:
-                if t.prioridad == prioridad and t.hora is not None and t.hora == hora_actual:
-                    mensaje_pre = f"- {t.nombre} ({t.prioridad})({t.hora})"
-                    if usar_frase:
-                        if lista_frases:
-                            eleccion = random.choice(lista_frases)
-                            mensaje_pre += f"\n - */{eleccion}/*"
-                        else:
-                            mensaje_pre += f"\n - */La fortaleza del hombre radica en el dominio de su mente/*"
-        pendientes.append(mensaje_pre)
+                if dia_actual_texto in t.dias:
+                    if t.prioridad == prioridad and t.hora is not None and t.hora == hora_actual:
+                        mensaje_pre = f"- {t.nombre} ({t.prioridad})({t.hora})"
+                        if usar_frase:
+                            if lista_frases:
+                                eleccion = random.choice(lista_frases)
+                                mensaje_pre += f"\n - */{eleccion}/*"
+                            else:
+                                mensaje_pre += f"\n - */La fortaleza del hombre radica en el dominio de su mente/*"
+                    pendientes.append(mensaje_pre)
         if pendientes:
             mensaje_texto = "Tareas pendientes:\n" + "\n".join(pendientes)
         else:

@@ -25,12 +25,14 @@ class TareaRutina(Tarea):
         super().__init__(nombre, prioridad)
         self.tipo = "Rutina"
         self.racha = 0
+        self.dias = ["lunes","martes","miércoles","jueves","viernes","sabado","domingo"]
     
     def mostrar_informacion(self):
-        print(f"| Fecha Creación: {self.fecha_creacion} | Nombre: {self.nombre} | Estado: {self.estado} | Hora: {self.hora} | Prioridad: {self.prioridad} | Racha: {self.racha} | \n")
+        print(f"| Fecha Creación: {self.fecha_creacion} | Nombre: {self.nombre} | Estado: {self.estado} | Hora: {self.hora} | Prioridad: {self.prioridad} | Racha: {self.racha} | \n | Dias tarea: {self.dias} |")
 
     
     def a_diccionario(self):
         dicc = super().a_diccionario()
         dicc["racha"] = self.racha
+        dicc["dias"] = self.dias
         return dicc

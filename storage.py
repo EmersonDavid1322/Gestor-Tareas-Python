@@ -57,6 +57,7 @@ def cargar_datos():
                 rutina.estado = dato["estado"]
                 rutina.hora = dato["hora"]
                 rutina.racha = dato["racha"]
+                rutina.dias = dato["dias"]
                 tareas_rutina.append(rutina)
             
             registro_cumplidos = datos["registro"]
