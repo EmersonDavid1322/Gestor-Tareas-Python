@@ -21,7 +21,10 @@ class Tarea:
             "tipo": self.tipo
         }
     
+<<<<<<< HEAD
 frases = []
+=======
+>>>>>>> 16710cdeb4565ecf98a0ff2f7af30c8b0f7f803e
 class TareaRutina(Tarea):
     def __init__(self, nombre, prioridad):
         super().__init__(nombre, prioridad)
@@ -36,4 +39,8 @@ class TareaRutina(Tarea):
         dicc = super().a_diccionario()
         dicc["racha"] = self.racha
         return dicc
+<<<<<<< HEAD
     
+=======
+    
+>>>>>>> 16710cdeb4565ecf98a0ff2f7af30c8b0f7f803e

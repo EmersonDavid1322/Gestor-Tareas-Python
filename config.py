@@ -1,4 +1,5 @@
 import requests
+<<<<<<< HEAD
 from storage import guardar_datos, cargar_datos
 tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase = cargar_datos()
 
@@ -37,6 +38,9 @@ def opcion_frase(tareas, historial, puntos, tareas_rutina, registro_cumplidos,we
         else:
             print("No se hiso ningun cambio \n")
 
+=======
+from storage import guardar_datos
+>>>>>>> 16710cdeb4565ecf98a0ff2f7af30c8b0f7f803e
 
 def web_h():
     try:

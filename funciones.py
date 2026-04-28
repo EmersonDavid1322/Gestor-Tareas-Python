@@ -32,13 +32,21 @@ def agregar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,web
         if tarea_datos.tipo == "Rutina":
             tareas_rutina.append(tarea_datos)
             historial.append("Se añadió la tarea rutinaria: " + tarea_datos.nombre)
+<<<<<<< HEAD
             guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+=======
+            guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook)
+>>>>>>> 16710cdeb4565ecf98a0ff2f7af30c8b0f7f803e
             print("Tarea agregada correctamente")
             return
         else:
             tareas.append(tarea_datos)
             historial.append("Se añadió la tarea unica: " + tarea_datos.nombre)
+<<<<<<< HEAD
             guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+=======
+            guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook)
+>>>>>>> 16710cdeb4565ecf98a0ff2f7af30c8b0f7f803e
             print("Tarea agregada correctamente")
     else:
         if tarea_datos.tipo == "Rutina":
@@ -49,7 +57,11 @@ def agregar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,web
             if duplicada in ("s", "si"):
                 tareas.append(tarea_datos)
                 historial.append("Se añadió tarea duplicada: " + tarea_datos.nombre)
+<<<<<<< HEAD
                 guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+=======
+                guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook)
+>>>>>>> 16710cdeb4565ecf98a0ff2f7af30c8b0f7f803e
                 print("Tarea duplicada añadida")
                 return
             else:
@@ -157,7 +169,11 @@ def buscar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webho
                 tarea = datos_tarea()
                 tareas.append(tarea)
             historial.append("Se edito la tarea: " + tarea.nombre)
+<<<<<<< HEAD
             guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+=======
+            guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook)
+>>>>>>> 16710cdeb4565ecf98a0ff2f7af30c8b0f7f803e
             print("La tarea a sido editada")
             tarea.mostrar_informacion()
 
@@ -179,7 +195,11 @@ def editar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webh
             tarea = datos_tarea()
             tareas.append(tarea)
         historial.append("Se edito la tarea: " + tarea.nombre)
+<<<<<<< HEAD
         guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+=======
+        guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook)
+>>>>>>> 16710cdeb4565ecf98a0ff2f7af30c8b0f7f803e
         print("La tarea a sido editada")
         tarea.mostrar_informacion()
 
@@ -293,7 +313,11 @@ def elimnar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,web
         else:
             tareas.remove(tareas_eliminar)
         historial.append("Se elimino la tarea: " + str(f"Nombre: {tareas_eliminar.nombre} | Tipo: {tareas_eliminar.tipo} | Estado: {tareas_eliminar.estado}| Hora: {tareas_eliminar.hora}"))
+<<<<<<< HEAD
         guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+=======
+        guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook)
+>>>>>>> 16710cdeb4565ecf98a0ff2f7af30c8b0f7f803e
         print("Tarea eliminada")
     else:
         print("Se cancelo la eliminación")

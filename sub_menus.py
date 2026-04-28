@@ -1,7 +1,10 @@
 from funciones import *
 from storage import *
 from config import *
+
 tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase = cargar_datos()
+=======
+tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook = cargar_datos()
 
 def gestor_tareas():
     while True:
@@ -22,10 +25,17 @@ def gestor_tareas():
             continue
         
         if opcion == 1:
+<<<<<<< HEAD
             agregar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
         
         elif opcion == 2:
             marcar_tarea_completa(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+=======
+            agregar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook)
+        
+        elif opcion == 2:
+            marcar_tarea_completa(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook)
+>>>>>>> 16710cdeb4565ecf98a0ff2f7af30c8b0f7f803e
         
         elif opcion == 3:
             try:
@@ -44,6 +54,7 @@ def gestor_tareas():
                 ver_tareas_registros(tareas,tareas_rutina,registro_cumplidos)
         
         elif opcion == 4:
+<<<<<<< HEAD
             buscar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
         
         elif opcion == 5:
@@ -51,6 +62,15 @@ def gestor_tareas():
         
         elif opcion == 6:
             elimnar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+=======
+            buscar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook)
+        
+        elif opcion == 5:
+            editar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook)
+        
+        elif opcion == 6:
+            elimnar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook)
+>>>>>>> 16710cdeb4565ecf98a0ff2f7af30c8b0f7f803e
         
         elif opcion == 7:
             print("Volviendo al Menu Principal...\n")
@@ -58,7 +78,11 @@ def gestor_tareas():
         else:
             print("Valor no valido")
 
+<<<<<<< HEAD
 def configuracion(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase):
+=======
+def configuracion():
+>>>>>>> 16710cdeb4565ecf98a0ff2f7af30c8b0f7f803e
     while True:
         try:
             print("-----Configuraciones-----")
@@ -73,6 +97,7 @@ def configuracion(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webh
             continue
 
         if opcion == 1:
+
             tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook,lista_frases,usar_frase = cargar_datos()
             if webhook == "":
                 print("No hay WEBHOOK registrado \n")
@@ -81,14 +106,30 @@ def configuracion(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webh
                 confirmacion = input(f"Su webhook actual es: \n{webhook} \n¿Desea editarlo? (S/N): ").lower()
                 if confirmacion in ("s","si"):
                     web_h()
+            tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook = cargar_datos()
+            if webhook == "":
+                print("No hay WEBHOOK registrado \n")
+                web_h(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook)
+            else:
+                confirmacion = input(f"Su webhook actual es: \n{webhook} \n¿Desea editarlo? (S/N): ").lower()
+                if confirmacion in ("s","si"):
+                    web_h(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook)
+>>>>>>> 16710cdeb4565ecf98a0ff2f7af30c8b0f7f803e
                 else:
                     print("Volviendo... \n")
         
         elif opcion == 2:
+<<<<<<< HEAD
             agregar_frase_nueva()
         
         elif opcion == 3:
             opcion_frase(tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase)
+=======
+            print("Opción aun no implementada\n")
+        
+        elif opcion == 3:
+            print("Opcion aun no implementada\n")
+>>>>>>> 16710cdeb4565ecf98a0ff2f7af30c8b0f7f803e
         
         elif opcion == 4:
             return
