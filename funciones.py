@@ -3,7 +3,7 @@ from datetime import datetime
 from clases import TareaRutina, Tarea
 
 def menu_f():
-    print("1) Gestionar Tareas")
+    print("\n1) Gestionar Tareas")
     print("2) Historial")
     print("3) Estadisticas")
     print("4) Configuraciones")
@@ -23,7 +23,7 @@ def validar_tarea(nombre,tareas,tareas_rutina):
             return t
 
 
-def agregar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase):
+def agregar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal):
     print("Ha seleccionado agregar tarea")
     tarea_datos = datos_tarea()
     tarea_añadir = validar_tarea(tarea_datos.nombre,tareas,tareas_rutina)
@@ -32,13 +32,13 @@ def agregar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,web
         if tarea_datos.tipo == "Rutina":
             tareas_rutina.append(tarea_datos)
             historial.append("Se añadió la tarea rutinaria: " + tarea_datos.nombre)
-            guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+            guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
             print("Tarea rutina agregada correctamente")
             return
         else:
             tareas.append(tarea_datos)
             historial.append("Se añadió la tarea unica: " + tarea_datos.nombre)
-            guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+            guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
             print("Tarea agregada correctamente")
     else:
         if tarea_datos.tipo == "Rutina":
@@ -49,7 +49,7 @@ def agregar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,web
             if duplicada in ("s", "si"):
                 tareas.append(tarea_datos)
                 historial.append("Se añadió tarea duplicada: " + tarea_datos.nombre)
-                guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+                guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
                 print("Tarea duplicada añadida")
                 return
             else:
@@ -150,7 +150,7 @@ def ver_tareas_registros(tareas,tareas_rutina,registro_cumplidos):
             for registro in registro_cumplidos:
                 print(registro)
 
-def buscar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase):
+def buscar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal):
     print("Ha seleccionado Buscar tarea")
     nombre = input("Introduzca el nombre de la tarea: ").title()
     tareas_buscar = validar_tarea(nombre,tareas,tareas_rutina)
@@ -172,11 +172,11 @@ def buscar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webho
                 tarea = datos_tarea()
                 tareas.append(tarea)
             historial.append("Se edito la tarea: " + tarea.nombre)
-            guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+            guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
             print("La tarea a sido editada")
             tarea.mostrar_informacion()
 
-def editar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase):
+def editar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal):
     print("Ha seleccionado Editar tarea")
     nombre = input("Introduzca el nombre de la tarea: ").title()
 
@@ -194,11 +194,11 @@ def editar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webh
             tarea = datos_tarea()
             tareas.append(tarea)
         historial.append("Se edito la tarea: " + tarea.nombre)
-        guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+        guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
         print("La tarea a sido editada")
         tarea.mostrar_informacion()
 
-def marcar_tarea_completa(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase):
+def marcar_tarea_completa(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal):
 
     print("Ha seleccionado marcar tarea")
     nombre = input("Ingrese el nombre de la tarea: ").title()
@@ -229,7 +229,7 @@ def marcar_tarea_completa(tareas, historial, puntos,tareas_rutina,registro_cumpl
                     puntos += puntaje
                 print(f"¡Felicidades! Tu puntaje de diciplina subio a: {puntaje} sigue asi")
                 print(f"¡Puntos totales: {puntos}!")
-                guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+                guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
         else:
             fecha = datetime.now()
             fecha_m = fecha.strftime("%d/%m/%Y")
@@ -255,14 +255,14 @@ def marcar_tarea_completa(tareas, historial, puntos,tareas_rutina,registro_cumpl
             historial.append(
                 f"Habito de {marcar_tarea.nombre} completo racha de {marcar_tarea.racha}"
             )
-            guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+            guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
     return puntos
 
-def ver_tareas_pendiente(tareas):
+def ver_tareas_pendiente(tareas,tareas_rutina):
     pendiente = False
     print("Ha seleccionado ver tareas pendientes")
     for prioridad in ["Alta", "Media", "Baja"]:
-        for tarea in tareas:
+        for tarea in tareas + tareas_rutina:
             if tarea.prioridad == prioridad and tarea.estado == "Pendiente":
                 pendiente = True
                 tarea.mostrar_informacion()
@@ -272,16 +272,16 @@ def ver_tareas_pendiente(tareas):
 
 
 
-def ver_tareas_completas(tareas,puntos):
+def ver_tareas_completas(tareas,tareas_rutina,puntos):
     completada = False
     print("Ha seleccionado ver tareas completas")
     for prioridad in ["Alta", "Media", "Baja"]:
-        for tarea in tareas:
-            if tarea.prioridad == prioridad and tarea.estado == "Completada":
+        for tarea in tareas + tareas_rutina:
+            if tarea.prioridad == prioridad and tarea.estado != "Pendiente":
                 completada = True
                 tarea.mostrar_informacion()
     if not completada:
-        print("No hay tareas Pendientes, ¡Sigue asi!")
+        print("No hay regitro de tareas completadas\n")
     print("Tu total de puntos de tareas completas es de: " + str(puntos))
 
 
@@ -292,7 +292,7 @@ def historial_f(historial):
         for m in historial:
             print("-",m,"\n")
 
-def elimnar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase):
+def elimnar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal):
     print("Ha seleccionado eliminar")
     nombre = input("Ingrese el nombre de la tarea o habito que desea eliminar: ").title()
     tareas_eliminar = validar_tarea(nombre,tareas,tareas_rutina)
@@ -309,7 +309,7 @@ def elimnar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,web
             tareas.remove(tareas_eliminar)
         historial.append("Se elimino la tarea: " + str(f"Nombre: {tareas_eliminar.nombre} | Tipo: {tareas_eliminar.tipo} | Estado: {tareas_eliminar.estado}| Hora: {tareas_eliminar.hora}"))
 
-        guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+        guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
 
         print("Tarea eliminada")
     else:

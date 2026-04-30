@@ -2,12 +2,12 @@ from funciones import *
 from storage import *
 from config import *
 
-tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase = cargar_datos()
+tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
 def gestor_tareas():
     while True:
         try:
-            print("-----Gestor Tareas-----")
+            print("\n-----Gestor Tareas-----")
             print("1) Crear una nueva tarea")
             print("2) Marcar tarea completa")
             print("3) Ver tareas")
@@ -23,10 +23,10 @@ def gestor_tareas():
             continue
         
         if opcion == 1:
-            agregar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+            agregar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
         
         elif opcion == 2:
-            marcar_tarea_completa(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+            marcar_tarea_completa(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
         elif opcion == 3:
             try:
                 print("1) ver tareas pendientes \t 2) ver tareas completas \n")
@@ -37,20 +37,20 @@ def gestor_tareas():
                 print("Debe de ingresas un valor numerico")
             
             if opcion_ver == 1:
-                ver_tareas_pendiente(tareas)
+                ver_tareas_pendiente(tareas,tareas_rutina)
             elif opcion_ver == 2:
-                ver_tareas_completas(tareas,puntos)
+                ver_tareas_completas(tareas,tareas_rutina,puntos)
             else:
                 ver_tareas_registros(tareas,tareas_rutina,registro_cumplidos)
         
         elif opcion == 4:
-            buscar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+            buscar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
         
         elif opcion == 5:
-            editar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+            editar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
         
         elif opcion == 6:
-            elimnar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase)
+            elimnar_tarea(tareas, historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
         
         elif opcion == 7:
             print("Volviendo al Menu Principal...\n")
@@ -63,11 +63,12 @@ def configuracion():
 
     while True:
         try:
-            print("-----Configuraciones-----")
+            print("\n-----Configuraciones-----")
             print("1) Configurar WEBHOOK")
-            print("2) Editar lista de frases")
+            print("2) Configurar datos del bot de discord (Token, ID canal)")
             print("3) Desactivar/Activar frases")
-            print("4) Salir")
+            print("4) Editar lista de frases")
+            print("5) Salir")
 
             opcion = int(input("\nSeleccione una opción: "))
         except ValueError:
@@ -75,7 +76,7 @@ def configuracion():
             continue
 
         if opcion == 1:
-            tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook,lista_frases,usar_frase = cargar_datos()
+            tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook,lista_frases,usar_frase,token, canal = cargar_datos()
 
             if webhook == "":
                 print("No hay WEBHOOK registrado \n")
@@ -86,16 +87,15 @@ def configuracion():
                     web_h()
         
         elif opcion == 2:
-            agregar_frase_nueva()
+            token_bot_discord()
         
         elif opcion == 3:
             opcion_frase()
-            print("Opción aun no implementada\n")
-        
-        elif opcion == 3:
-            print("Opcion aun no implementada\n")
         
         elif opcion == 4:
+            agregar_frase_nueva()
+
+        elif opcion == 5:
             return
         
         else:

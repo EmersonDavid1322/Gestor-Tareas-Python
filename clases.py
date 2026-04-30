@@ -28,7 +28,7 @@ class TareaRutina(Tarea):
         self.dias = ["lunes","martes","miércoles","jueves","viernes","sabado","domingo"]
     
     def mostrar_informacion(self):
-        print(f"| Fecha Creación: {self.fecha_creacion} | Nombre: {self.nombre} | Estado: {self.estado} | Hora: {self.hora} | Prioridad: {self.prioridad} | Racha: {self.racha} | \n | Dias tarea: {self.dias} |")
+        print(f"| Fecha Creación: {self.fecha_creacion} | Nombre: {self.nombre} | Estado: {self.estado} | Hora: {self.hora} | Prioridad: {self.prioridad} | Racha: {self.racha} | \n | Dias tarea: {self.dias} |\n")
 
     
     def a_diccionario(self):

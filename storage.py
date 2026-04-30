@@ -3,7 +3,7 @@ import os
 from clases import Tarea, TareaRutina
 os.makedirs("data", exist_ok=True)
 
-def guardar_datos(tareas,historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase): 
+def guardar_datos(tareas,historial,puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,id_canal): 
 
     tareas_json = []
     for tarea in tareas:
@@ -30,7 +30,9 @@ def guardar_datos(tareas,historial,puntos,tareas_rutina,registro_cumplidos,webho
     
     confi_data = {
         "webhook_url": webhook,
-        "usar_frase_l": usar_frase
+        "usar_frase_l": usar_frase,
+        "token_j": token,
+        "canal": id_canal
     }
     with open("data/config.json","w") as f:
         json.dump( confi_data, f, indent=4, ensure_ascii=False)
@@ -52,6 +54,7 @@ def cargar_datos():
                 tareas.append(tarea)
             
             for dato in datos["rutinas"]:
+
                 rutina = TareaRutina(dato["nombre"], dato["prioridad"])
                 rutina.fecha_creacion = dato["creacion"]
                 rutina.estado = dato["estado"]
@@ -73,6 +76,8 @@ def cargar_datos():
             
             webhook = confi_data["webhook_url"]
             usar_frase = confi_data["usar_frase_l"]
+            token = confi_data["token_j"]
+            canal = confi_data["canal"]
 
     except (FileNotFoundError, json.JSONDecodeError):
         tareas = []
@@ -82,5 +87,7 @@ def cargar_datos():
         lista_frases = []
         webhook = ""
         usar_frase = True
+        token = ""
+        canal = ""
         puntos = 0
-    return tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase
+    return tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal

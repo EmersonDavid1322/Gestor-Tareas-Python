@@ -8,9 +8,10 @@ os.chdir(ruta_del_script)
 
 def revisar_y_enviar():
     try:
+        fecha_hoy = datetime.now().strftime("%d/%m/%Y")
         hora_actual = datetime.now().strftime("%H:%M")
         pendientes = []
-        tareas, historial, puntos, tareas_rutina,registro_cumplidos, webhook, lista_frases, usar_frase = cargar_datos()
+        tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
         dias_semana = ["lunes","martes","miércoles","jueves","viernes","sabado","domingo"]
         indice_hoy = datetime.now().weekday()
