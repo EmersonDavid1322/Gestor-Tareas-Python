@@ -14,7 +14,7 @@ def menu_principal():
         elif opcion == 2:
             historial_f(historial)
         elif opcion == 3:
-            estadisticas(tareas)
+            estadisticas(tareas,tareas_rutina)
         elif opcion == 4:
             configuracion()
         elif opcion == 5:

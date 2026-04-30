@@ -315,22 +315,38 @@ def elimnar_tarea(tareas, historial, puntos,tareas_rutina,registro_cumplidos,web
     else:
         print("Se cancelo la eliminación")
 
-def estadisticas(tareas):
-    print("La cantidad de tareas registradas son: ",len(tareas), "\n")
+def estadisticas(tareas,tareas_rutina):
+    while True:
+        tipo = input("Introduzca el tipo de estadisca que desea ver: (tarea/rutina): ")
+        if tipo== "tarea":
+            lista = tareas
+            break
+        elif tipo == "rutina":
+            lista = tareas_rutina
+            break
+        else:
+            print("Invalido")
+            continue
 
-    completadas = sum(1 for t in tareas if t.estado == "Completada")
+    print("La cantidad de tareas registradas son: ",len(lista), "\n")
+
+    completadas = sum(1 for t in lista if t.estado != "Pendiente")
     print("La cantidad de tareas Completadas son: ",completadas, "\n")
 
-    pendientes = sum(1 for t in tareas if t.estado == "Pendiente")
+    pendientes = sum(1 for t in lista if t.estado == "Pendiente")
     print("La cantidad de tareas pendientes son: ",pendientes, "\n")
-    if len(tareas) == 0:
+    if len(lista) == 0:
         porcentaje_c = 0
     else:
-        porcentaje_c = (completadas / len(tareas)) * 100
+        porcentaje_c = (completadas / len(lista)) * 100
 
-    if len(tareas) == 0:
+    if len(lista) == 0:
         porcentaje_p = 0
     else:
-        porcentaje_p = (pendientes / len(tareas)) * 100
+        porcentaje_p = (pendientes / len(lista)) * 100
     print(f"El porcentaje de tareas completas es de: {porcentaje_c:.2f}%")
     print(f"El porcentaje de tareas pendientes es de: {porcentaje_p:.2f}%\n")
+
+    bloques = int(porcentaje_c / 10)
+    barra = "🟦" * bloques + "⬜" * (10 - bloques)
+    print(f"Progreso: [{barra}] {porcentaje_c:.2f}%")
