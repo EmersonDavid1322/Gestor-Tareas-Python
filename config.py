@@ -1,5 +1,4 @@
 import requests
-from discord_bot import on_ready
 from storage import guardar_datos, cargar_datos
 import customtkinter as ctk
 import tkinter.messagebox as messagebox
