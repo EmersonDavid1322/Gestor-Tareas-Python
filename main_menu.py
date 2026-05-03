@@ -15,8 +15,6 @@ def menu_principal():
             historial_f(historial)
         elif opcion == 3:
             estadisticas(tareas,tareas_rutina)
-        elif opcion == 4:
-            configuracion()
         elif opcion == 5:
             confirmacion = input("Ha seleccionado salir, ¿esta seguro? (S/N): ").lower()
             if confirmacion in ("s","si"):

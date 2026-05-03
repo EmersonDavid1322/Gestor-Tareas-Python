@@ -47,7 +47,7 @@ def cargar_datos():
             tareas_rutina = []
 
             for dato in datos["tareas"]:
-                tarea = Tarea(dato["nombre"], dato["prioridad"])
+                tarea = Tarea(dato["nombre"], dato["prioridad"],dato["hora"])
                 tarea.fecha_creacion = dato["creacion"]
                 tarea.estado = dato["estado"]
                 tarea.hora = dato["hora"]
@@ -55,7 +55,7 @@ def cargar_datos():
             
             for dato in datos["rutinas"]:
 
-                rutina = TareaRutina(dato["nombre"], dato["prioridad"])
+                rutina = TareaRutina(dato["nombre"], dato["prioridad"],dato["hora"],dato["dias"])
                 rutina.fecha_creacion = dato["creacion"]
                 rutina.estado = dato["estado"]
                 rutina.hora = dato["hora"]
