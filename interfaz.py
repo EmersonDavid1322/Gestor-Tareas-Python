@@ -6,39 +6,45 @@ from storage import cargar_datos
 from config import VentanaConfiguraciones
 from interfaz_gestor import ventanaGestionarTareas
 
-# Obtenemos la carpeta donde vive la interfaz
-base_path = os.path.dirname(os.path.abspath(__file__))
+def get_base_dir():
+    if getattr(sys, 'frozen', False):
+        return os.path.dirname(sys.executable)
+    return os.path.dirname(os.path.abspath(__file__))
 
-# Construimos la ruta al bot asumiendo que están en la misma carpeta
-ruta_bot = os.path.join(base_path, "discord_bot.py")
+BASE_DIR = get_base_dir()
 
 def iniciar_bot_discord():
+    bot_path = os.path.join(BASE_DIR, "bot_disciplina")
 
-    resultado = subprocess.run(["pgrep", "-f", "discord_bot.py"], capture_output=True)
+    resultado = subprocess.run(["pgrep", "-f", "bot_disciplina"], capture_output=True)
 
     if resultado.returncode == 0:
-        print("✅ El bot ya está activo. No se lanzará otro.")
+        print("✅ El bot ya está activo.")
     else:
-        if os.path.exists(ruta_bot):
+        if os.path.exists(bot_path):
             subprocess.Popen(
-                [sys.executable, ruta_bot],
+                [bot_path],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 start_new_session=True
             )
-            print("🤖 Bot de Discord lanzado en segundo plano.")
+            print("🤖 Bot lanzado.")
         else:
-            print(f"⚠️ No se encontró el bot en: {ruta_bot}")
+            print(f"⚠️ No se encontró: {bot_path}")
 
 def lanzar_vigilante():
-    
-    resultado = subprocess.run(["pgrep", "-f", "notificaciones.py"], capture_output=True)
+    noti_path = os.path.join(BASE_DIR, "notificador")
+
+    resultado = subprocess.run(["pgrep", "-f", "notificador"], capture_output=True)
 
     if resultado.returncode == 0:
-        print("✅ El vigilante ya está activo. No se lanzará otro.")
+        print("✅ Vigilante ya activo.")
     else:
-        subprocess.Popen(["python3", "notificaciones.py"])
-        print("🔔 Vigilante lanzado en segundo plano.")
+        if os.path.exists(noti_path):
+            subprocess.Popen([noti_path])
+            print("🔔 Vigilante lanzado.")
+        else:
+            print(f"⚠️ No se encontró: {noti_path}")
 
 if __name__ == "__main__":
     iniciar_bot_discord()
