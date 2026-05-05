@@ -1,10 +1,11 @@
 from datetime import datetime
+
 class Tarea:
-    def __init__(self, nombre, prioridad):
+    def __init__(self, nombre, prioridad,hora):
         self.fecha_creacion = datetime.now().strftime("%d/%m/%Y")
         self.nombre = nombre
         self.estado = "Pendiente"
-        self.hora = None
+        self.hora = hora
         self.prioridad = prioridad
         self.tipo = "Unica"
     
@@ -21,11 +22,11 @@ class Tarea:
             "tipo": self.tipo
         }
 class TareaRutina(Tarea):
-    def __init__(self, nombre, prioridad):
-        super().__init__(nombre, prioridad)
+    def __init__(self, nombre, prioridad,hora,dias):
+        super().__init__(nombre, prioridad,hora)
         self.tipo = "Rutina"
         self.racha = 0
-        self.dias = ["lunes","martes","miércoles","jueves","viernes","sabado","domingo"]
+        self.dias = dias
     
     def mostrar_informacion(self):
         print(f"| Fecha Creación: {self.fecha_creacion} | Nombre: {self.nombre} | Estado: {self.estado} | Hora: {self.hora} | Prioridad: {self.prioridad} | Racha: {self.racha} | \n | Dias tarea: {self.dias} |\n")

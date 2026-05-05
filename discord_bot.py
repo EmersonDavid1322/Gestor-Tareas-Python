@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 import random
+import os
 from storage import guardar_datos, cargar_datos
 tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
