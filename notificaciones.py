@@ -7,14 +7,13 @@ import random
 import time
 from storage import cargar_datos
 
-with open("/tmp/test_notificador.txt", "a") as f:
-    f.write("Se ejecutó\n")
-
 RUTA_MEMORIA_NOTI = "/tmp/ultima_noti_disciplina.txt"
 
 import sys
-
-BASE_DIR = os.path.dirname(os.path.abspath(sys.executable))
+if getattr(sys, 'frozen', False):
+    BASE_DIR = os.path.dirname(os.path.abspath(sys.executable))
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 RUTA_SONIDO = os.path.join(BASE_DIR, "noti", "dota2-notification.mp3")
 
@@ -48,10 +47,10 @@ def enviar_notificaion():
             pass
         else:
             if tarea.hora == hora:
-                print("ENTRÓ AL IF 🔥")
                 id_tarea = f"{tarea.nombre}:{tarea.hora}:{fecha}"
 
                 if tarea.tipo == "Unica":
+                    print("ENTRÓ AL IF 🔥 Unica")
                     if ultima_notificacion != id_tarea and tarea.estado == "Pendiente":
                         notificacion(tarea.nombre.title(),f"Ya es hora de completar la tarea de {tarea.nombre} \n{frase_motivadora}")
                     
@@ -61,28 +60,24 @@ def enviar_notificaion():
                         print(f"✅ Notificado: {id_tarea}")
                         return
                 else:
-                    if ultima_notificacion == id_tarea and str(fecha) in tarea.estado:
+                    print("Rutina")
+                    if str(fecha) in tarea.estado:
+                        print("Fecha completa")
                         return
-                    else:
-                        print("ENTRÓ AL IF 🔥")
-                        if ultima_notificacion != id_tarea and tarea.estado == "Pendiente":
-                            notificacion(tarea.nombre.title(),f"Ya es hora de completar la tarea de {tarea.nombre} \n{frase_motivadora}")
-                        
-                            with open(RUTA_MEMORIA_NOTI, "w") as f:
-                                f.write(id_tarea)
+                    elif ultima_notificacion != id_tarea and tarea.estado != "Pendiente":
+                        notificacion(tarea.nombre.title(),f"Ya es hora de completar la tarea de {tarea.nombre} \n{frase_motivadora}")
+                    
+                        with open(RUTA_MEMORIA_NOTI, "w") as f:
+                            f.write(id_tarea)
 
-                            print(f"✅ Notificado: {id_tarea}")
-                            return
+                        print(f"✅ Notificado: {id_tarea}")
+                        return
 
 def daemon_notificaciones():
     print("🚀 Vigilante de Disciplina iniciado...")
 
     while True:
-        # 1. Ejecuta la lógica que ya programamos
         enviar_notificaion()
-        
-        # 2. Espera exactamente hasta el inicio del siguiente minuto
-        # Esto es más preciso que un simple sleep(60)
         time.sleep(60)
 
 if __name__ == "__main__":

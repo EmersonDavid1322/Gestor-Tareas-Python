@@ -75,13 +75,13 @@ def cargar_datos():
             tareas_rutina = []
 
             for dato in datos["tareas"]:
-                tarea = Tarea(dato["nombre"], dato["prioridad"], dato["hora"])
+                tarea = Tarea(dato["id"],dato["nombre"], dato["prioridad"], dato["hora"])
                 tarea.fecha_creacion = dato.get("creacion", "") # Usar .get evita errores si falta la clave
                 tarea.estado = dato["estado"]
                 tareas.append(tarea)
             
             for dato in datos["rutinas"]:
-                rutina = TareaRutina(dato["nombre"], dato["prioridad"], dato["hora"], dato["dias"])
+                rutina = TareaRutina(dato["id"],dato["nombre"], dato["prioridad"], dato["hora"], dato["dias"])
                 rutina.fecha_creacion = dato.get("creacion", "")
                 rutina.estado = dato["estado"]
                 rutina.racha = dato.get("racha", 0)
