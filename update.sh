@@ -21,7 +21,9 @@ echo "⚙️ Compilando bot..."
 pyinstaller --noconfirm --onefile "$BASE_DIR/discord_bot.py" --name bot_disciplina
 
 echo "⚙️ Compilando notificador..."
-pyinstaller --noconfirm --onefile "$BASE_DIR/notificaciones.py" --name notificador
+pyinstaller --onefile notificaciones.py \
+    --name notificador \
+    --collect-all plyer
 
 echo "⚙️ Compilando interfaz..."
 pyinstaller --noconfirm --onefile --windowed "$BASE_DIR/interfaz.py" --name GestorDisciplina

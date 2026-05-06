@@ -7,18 +7,25 @@ import random
 import time
 from storage import cargar_datos
 
+with open("/tmp/test_notificador.txt", "a") as f:
+    f.write("Se ejecutó\n")
+
 RUTA_MEMORIA_NOTI = "/tmp/ultima_noti_disciplina.txt"
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+import sys
+
+BASE_DIR = os.path.dirname(os.path.abspath(sys.executable))
+
 RUTA_SONIDO = os.path.join(BASE_DIR, "noti", "dota2-notification.mp3")
 
 def notificacion(titulo, mensaje):
+    print("Reproduciendo sonido:", RUTA_SONIDO)
     subprocess.Popen(["paplay", RUTA_SONIDO])
+    print("Intentando notificar")
     notification.notify(
         title=f"🥊 {titulo}",
         message=mensaje,
         app_name='Gestor de Disciplina',
-        app_icon='/home/emersondavid/Imágenes/icono.png',
         timeout=10
     )
 
@@ -41,6 +48,7 @@ def enviar_notificaion():
             pass
         else:
             if tarea.hora == hora:
+                print("ENTRÓ AL IF 🔥")
                 id_tarea = f"{tarea.nombre}:{tarea.hora}:{fecha}"
 
                 if tarea.tipo == "Unica":
@@ -56,6 +64,7 @@ def enviar_notificaion():
                     if ultima_notificacion == id_tarea and str(fecha) in tarea.estado:
                         return
                     else:
+                        print("ENTRÓ AL IF 🔥")
                         if ultima_notificacion != id_tarea and tarea.estado == "Pendiente":
                             notificacion(tarea.nombre.title(),f"Ya es hora de completar la tarea de {tarea.nombre} \n{frase_motivadora}")
                         
@@ -74,9 +83,7 @@ def daemon_notificaciones():
         
         # 2. Espera exactamente hasta el inicio del siguiente minuto
         # Esto es más preciso que un simple sleep(60)
-        ahora = datetime.now()
-        espera = 60 - ahora.second
-        time.sleep(espera)
+        time.sleep(60)
 
 if __name__ == "__main__":
     daemon_notificaciones()
