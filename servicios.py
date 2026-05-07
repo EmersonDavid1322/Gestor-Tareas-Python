@@ -43,6 +43,7 @@ def agregar_tarea(nombre,tipo,prioridad,tiempo,dias):
                 historial.append("Se añadió la tarea unica: " + tarea_datos.nombre)
                 guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
                 messagebox.showinfo("Añadir Tareas",f"Tarea agregada {tarea_datos.nombre} correctamente")
+                return
         else:
             if tarea_datos.tipo == "Rutina":
                 respuesta = messagebox.askyesno("Tarea Duplicada", f"La tarea '{nombre}' ya existe. ¿Deseas duplicarla?")

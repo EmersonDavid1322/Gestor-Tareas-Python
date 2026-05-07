@@ -46,9 +46,6 @@ def lanzar_vigilante():
         else:
             print(f"⚠️ No se encontró: {noti_path}")
 
-if __name__ == "__main__":
-    iniciar_bot_discord()
-    lanzar_vigilante()
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -78,8 +75,6 @@ class VentanaMenu(ctk.CTk):
         #Configuraciones
         self.btn_gestor = ctk.CTkButton(self, text="Configuraciones", command=VentanaConfiguraciones)
         self.btn_gestor.pack(pady=20)
-
-
 
     def añadir_tarea(self):
         self.withdraw() # El menú se esconde
@@ -214,5 +209,9 @@ class VentanaEstadisticas(ctk.CTkToplevel):
         self.lbl_puntos.pack()
 
 
-ventana = VentanaMenu()
-ventana.mainloop()
+
+if __name__ == "__main__":
+    iniciar_bot_discord()
+    lanzar_vigilante()
+    ventana = VentanaMenu()
+    ventana.mainloop()

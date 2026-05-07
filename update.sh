@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+
 # 1. Ruta base del proyecto
 BASE_DIR=$(dirname "$(readlink -f "$0")")
 
@@ -49,6 +51,9 @@ echo "🧹 Limpieza final..."
 rm -rf "$BASE_DIR/build"
 rm -rf "$BASE_DIR/dist"
 rm -f "$BASE_DIR"/*.spec
+
+pkill -f notificador
+pkill -f bot_disciplina
 
 echo "✅ ¡Todo listo! Ejecuta:"
 echo "$DESTINO_APP/GestorDisciplina"

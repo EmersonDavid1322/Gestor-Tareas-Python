@@ -3,6 +3,8 @@ import tkinter.messagebox as messagebox
 from storage import cargar_datos
 from servicios import agregar_tarea, completar, eliminar_tarea, mostrar_info_tarea
 
+print("Version 1.0 Interfaz")
+
 class ventanaGestionarTareas(ctk.CTkToplevel):
     def __init__(self,menu_principal):
         super().__init__()
@@ -166,7 +168,7 @@ class VentanaTareas(ctk.CTkToplevel):
             fila.pack(fill="x", pady=5, padx=5)
 
             #informacion de la tarea
-            info_ta = f"| {tarea.nombre} | {tarea.prioridad} | {tarea.hora} |".title()
+            info_ta = f"| {tarea.nombre} | {tarea.prioridad} | {tarea.estado} | {tarea.hora} |".title()
             info_lbl = ctk.CTkLabel(fila, text=info_ta, font=("Roboto", 12))
             info_lbl.pack(side="left", padx=15, pady=10)
 

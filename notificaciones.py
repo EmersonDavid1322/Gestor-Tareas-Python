@@ -75,10 +75,11 @@ def enviar_notificaion():
 
 def daemon_notificaciones():
     print("🚀 Vigilante de Disciplina iniciado...")
+    print("Version 1.0 Notificador")
 
     while True:
         enviar_notificaion()
-        time.sleep(60)
+        time.sleep(15)
 
 if __name__ == "__main__":
     daemon_notificaciones()

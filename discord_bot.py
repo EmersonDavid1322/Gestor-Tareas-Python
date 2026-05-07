@@ -187,6 +187,8 @@ async def ayuda(ctx):
     embed.add_field(name="`!racha`", value="Muesta tu mejor racha actualmente junto con la cantidad de días.", inline=False)
     embed.add_field(name="`!frases`", value="Muesta frases aletorias que hayas añadido en la lista de frases.", inline=False)
     embed.add_field(name="`!ayuda`", value="Muestra este mensaje de soporte.", inline=False)
+    embed.add_field(name="`VERSION`", value="1.0 Bot Discord", inline=False)
+
 
     embed.set_footer(text="¡Sigue en el camino asi!")
     
