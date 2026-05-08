@@ -20,7 +20,6 @@ RUTA_SONIDO = os.path.join(BASE_DIR, "noti", "dota2-notification.mp3")
 def notificacion(titulo, mensaje):
     print("Reproduciendo sonido:", RUTA_SONIDO)
     subprocess.Popen(["paplay", RUTA_SONIDO])
-    print("Intentando notificar")
     notification.notify(
         title=f"🥊 {titulo}",
         message=mensaje,
@@ -62,9 +61,17 @@ def enviar_notificaion():
                 else:
                     print("Rutina")
                     if str(fecha) in tarea.estado:
-                        print("Fecha completa")
+                        print("Fecha conside con estado")
                         return
-                    elif ultima_notificacion != id_tarea and tarea.estado != "Pendiente":
+                    elif tarea.estado == "Pendiente" and ultima_notificacion != id_tarea:
+                        print(f"Enviado {tarea.estado}")
+                        notificacion(tarea.nombre.title(),f"Ya es hora de completar la tarea de {tarea.nombre} \n{frase_motivadora}")
+
+                        with open(RUTA_MEMORIA_NOTI, "w") as f:
+                            f.write(id_tarea)
+
+                    elif ultima_notificacion != id_tarea:
+                        print(f"Enviando {tarea.estado}")
                         notificacion(tarea.nombre.title(),f"Ya es hora de completar la tarea de {tarea.nombre} \n{frase_motivadora}")
                     
                         with open(RUTA_MEMORIA_NOTI, "w") as f:
@@ -72,10 +79,12 @@ def enviar_notificaion():
 
                         print(f"✅ Notificado: {id_tarea}")
                         return
+                    else:
+                        print("No notifique")
 
 def daemon_notificaciones():
     print("🚀 Vigilante de Disciplina iniciado...")
-    print("Version 1.0 Notificador")
+    print("Version 1.01")
 
     while True:
         enviar_notificaion()

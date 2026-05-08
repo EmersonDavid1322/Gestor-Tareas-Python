@@ -10,6 +10,8 @@ DESTINO_APP="$HOME/apps/gestor"
 
 mkdir -p "$DESTINO_APP"
 
+rm -rf "$DESTINO_APP/gestor"
+
 echo "📁 Preparando carpeta: $DESTINO_APP"
 echo "🚀 Iniciando compilación en: $BASE_DIR"
 
