@@ -6,47 +6,6 @@ from storage import cargar_datos
 from config import VentanaConfiguraciones
 from interfaz_gestor import ventanaGestionarTareas
 
-def get_base_dir():
-    if getattr(sys, 'frozen', False):
-        return os.path.dirname(sys.executable)
-    return os.path.dirname(os.path.abspath(__file__))
-
-BASE_DIR = get_base_dir()
-
-def iniciar_bot_discord():
-    bot_path = os.path.join(BASE_DIR, "bot_disciplina")
-
-    resultado = subprocess.run(["pgrep", "-f", "bot_disciplina"], capture_output=True)
-
-    if resultado.returncode == 0:
-        print("✅ El bot ya está activo.")
-    else:
-        if os.path.exists(bot_path):
-            subprocess.Popen(
-                [bot_path],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                start_new_session=True
-            )
-            print("🤖 Bot lanzado.")
-        else:
-            print(f"⚠️ No se encontró: {bot_path}")
-
-def lanzar_vigilante():
-    noti_path = os.path.join(BASE_DIR, "notificador")
-
-    resultado = subprocess.run(["pgrep", "-f", "notificador"], capture_output=True)
-
-    if resultado.returncode == 0:
-        print("✅ Vigilante ya activo.")
-    else:
-        if os.path.exists(noti_path):
-            subprocess.Popen([noti_path])
-            print("🔔 Vigilante lanzado.")
-        else:
-            print(f"⚠️ No se encontró: {noti_path}")
-
-
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
@@ -211,7 +170,5 @@ class VentanaEstadisticas(ctk.CTkToplevel):
 
 
 if __name__ == "__main__":
-    iniciar_bot_discord()
-    lanzar_vigilante()
     ventana = VentanaMenu()
     ventana.mainloop()

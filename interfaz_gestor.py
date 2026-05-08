@@ -1,9 +1,9 @@
 import customtkinter as ctk
 import tkinter.messagebox as messagebox
 from storage import cargar_datos
-from servicios import agregar_tarea, completar, eliminar_tarea, mostrar_info_tarea
+from servicios import agregar_tarea, completar, fallar_tarea, eliminar_tarea, mostrar_info_tarea
 
-print("Version 1.0 Interfaz")
+print("Version 1.1 Interfaz")
 
 class ventanaGestionarTareas(ctk.CTkToplevel):
     def __init__(self,menu_principal):
@@ -174,33 +174,39 @@ class VentanaTareas(ctk.CTkToplevel):
 
             #eliminar tarea
             boton_elimnar = ctk.CTkButton(fila,text="x", width=30, fg_color="#922b21", hover_color="#641e16",
-                                            command=lambda idx=i, r=es_rutina, msg=True: self.actualizar_eliminar(idx,r,msg))
+                                            command=lambda id_tarea = tarea.id, idx=i, r=es_rutina, msg=True: self.actualizar_eliminar(id_tarea,idx,r,msg))
             boton_elimnar.pack(side="right", padx=10)
 
             #editar tarea
             boton_editar = ctk.CTkButton(fila,text="Editar", width=50,
-                                        command=lambda r=es_rutina, idx=i,msg=False: self.editar_tarea(idx,r,msg))
+                                        command=lambda id_tarea = tarea.id, r=es_rutina, idx=i,msg=False: self.editar_tarea(id_tarea,idx,r,msg))
             boton_editar.pack(side="right", padx=10)
 
             #completar
             boton_compl= ctk.CTkButton(fila, text="Completar",width=30,fg_color="#2B2FA5",
                                         command=lambda id_tarea=tarea.id, r=es_rutina: completar(id_tarea))
             boton_compl.pack(side="right", padx=10)
+
+            #Fallar
+            if tarea.tipo == "Rutina":
+                boton_elimnar = ctk.CTkButton(fila,text="Falle", width=30, fg_color="#922b21", hover_color="#641e16",
+                                                command=lambda id_tarea = tarea.id : fallar_tarea(id_tarea))
+                boton_elimnar.pack(side="right", padx=10)
             
             #mostar informacion completa de la tarea
             boton_info = ctk.CTkButton(fila, text="!",width=30,fg_color="#29A55B",
-                                        command=lambda t=tarea, r=es_rutina: mostrar_info_tarea(t,r))
+                                        command=lambda id_tarea=tarea.id, r=es_rutina: mostrar_info_tarea(id_tarea,r))
             boton_info.pack(side="right", padx=10)
 
-    def actualizar_eliminar(self,idx,r,msg):
-        eliminar_tarea(idx,r,msg)
+    def actualizar_eliminar(self,id_tarea,idx,r,msg):
+        eliminar_tarea(id_tarea,idx,r,msg)
         self.mostrar_tareas()
         
 
-    def editar_tarea(self,idx,r,msg):
+    def editar_tarea(self,id_tarea,idx,r,msg):
         confirmacion = messagebox.askyesno("Editar","¿Desea editar esta tarea?")
         if confirmacion:
-            eliminar_tarea(idx,r,msg)
+            eliminar_tarea(id_tarea,idx,r,msg)
             VentanaAnadirTareas()
             self.mostrar_tareas()
 

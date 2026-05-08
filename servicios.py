@@ -90,10 +90,9 @@ def completar(id):
                     messagebox.showinfo("Completar",f"¡Felicidades! Tu puntaje de diciplina subio a: {puntaje} sigue asi")
                     guardar_datos(tareas, historial, puntos_v,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
             else:
-                fecha = datetime.now()
-                fecha_m = fecha.strftime("%d/%m/%Y")
+                fecha_m = datetime.now().strftime("%d/%m/%Y")
 
-                if str(fecha_m) in marcar_tarea.estado:
+                if f"Completada {str(fecha_m)}" in marcar_tarea.estado:
                     messagebox.showwarning("Completar","Tarea ya marcada por hoy")
 
                 else:
@@ -122,25 +121,49 @@ def completar(id):
                     )
                     guardar_datos(tareas, historial, puntos_v,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
 
+def fallar_tarea(id):
+    fecha_m = datetime.now().strftime("%d/%m/%Y")
+    tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
-def eliminar_tarea(idx,r,msg):
+    tarea_f = validar_tarea_id(id, tareas,tareas_rutina)
+
+    if tarea_f.estado == "Pendiente" or "Fallida" in tarea_f.estado:
+        messagebox.showerror("Fallar","Esta tarea no se a completado o ya ha sido marcada como fallida")
+        return
+    
+    tarea_f.racha = 0
+    tarea_f.estado = f"Fallida {fecha_m}"
+    messagebox.showinfo("Fallar","Lo importante no es cuantas veces caes, sino la resilencia de volver a levantarte")
+    historial.append(f"Se a fallado la tarea '{tarea_f.nombre}' el {fecha_m}")
+    guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+    return
+
+def eliminar_tarea(id_tarea,idx,r,msg):
+        tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+
+        tarea_eliminar = validar_tarea_id(id_tarea,tareas,tareas_rutina)
+
         if msg:
             confirmacion = messagebox.askyesno("Elimnar","¿Desea eliminar esta tarea?")
         else:
             confirmacion = True
         
         if confirmacion:
-            tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
             if r:
                 print(r)
                 tareas_rutina.pop(idx)
+                historial.append(f"Se eliminio el habito '{tarea_eliminar.nombre}'")
             else:
                 print(r)
                 tareas.pop(idx)
+                historial.append(f"Se eliminio la tarea '{tarea_eliminar.nombre}'")
         
             guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
 
-def mostrar_info_tarea(t, r):
+def mostrar_info_tarea(id, r):
+        tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+        t = validar_tarea_id(id,tareas,tareas_rutina)
+
         texto_info = (
             f"📅 Creada: {t.fecha_creacion}\n"
             f"📝 ID: {t.id}"

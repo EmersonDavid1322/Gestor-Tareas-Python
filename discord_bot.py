@@ -6,6 +6,8 @@ import os
 from storage import guardar_datos, cargar_datos
 tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
+print("Version 1.1 Bot Discord")
+
 intents = discord.Intents.all()
 intents.message_content = True 
 
@@ -99,6 +101,7 @@ async def hecho(ctx, numero: int):
 
 @bot.command()
 async def fallo(ctx, numero: int):
+    fecha_m = datetime.now().strftime("%d/%m/%Y")
     tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
     indice_real = numero -1
     try:
@@ -109,7 +112,7 @@ async def fallo(ctx, numero: int):
     
         await ctx.send(f"La racha de la tarea **{tarea.nombre}** se reinicio a 0 \n racha de **🔥{tarea.racha}** días perdida")
         tarea.racha = 0
-        tarea.estado = "Pendiente"
+        tarea.estado = f"Fallida {fecha_m}"
         guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal) 
 
     except IndexError:
@@ -187,7 +190,7 @@ async def ayuda(ctx):
     embed.add_field(name="`!racha`", value="Muesta tu mejor racha actualmente junto con la cantidad de días.", inline=False)
     embed.add_field(name="`!frases`", value="Muesta frases aletorias que hayas añadido en la lista de frases.", inline=False)
     embed.add_field(name="`!ayuda`", value="Muestra este mensaje de soporte.", inline=False)
-    embed.add_field(name="`VERSION`", value="1.0 Bot Discord", inline=False)
+    embed.add_field(name="`VERSION`", value="1.1 Bot Discord", inline=False)
 
 
     embed.set_footer(text="¡Sigue en el camino asi!")

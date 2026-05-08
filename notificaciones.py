@@ -3,6 +3,7 @@ from playsound import playsound
 import subprocess
 import os
 from datetime import datetime
+from babel.dates import get_day_names
 import random
 import time
 from storage import cargar_datos
@@ -17,7 +18,7 @@ else:
 
 RUTA_SONIDO = os.path.join(BASE_DIR, "noti", "dota2-notification.mp3")
 
-def notificacion(titulo, mensaje):
+def notificacion_tareas(titulo, mensaje):
     print("Reproduciendo sonido:", RUTA_SONIDO)
     subprocess.Popen(["paplay", RUTA_SONIDO])
     notification.notify(
@@ -27,7 +28,7 @@ def notificacion(titulo, mensaje):
         timeout=10
     )
 
-def enviar_notificaion():
+def enviar_notificacion():
 
     ultima_notificacion = ""
     if os.path.exists(RUTA_MEMORIA_NOTI):
@@ -36,6 +37,11 @@ def enviar_notificaion():
     
     hora = datetime.now().strftime("%H:%M")
     fecha = datetime.now().strftime("%d/%m/%Y")
+
+    hoy = datetime.now()
+
+    nombres_dias = get_day_names('wide', locale='es')
+    dia_hoy = nombres_dias[hoy.weekday()]
 
     tareas, historial, puntos_v, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
@@ -51,7 +57,7 @@ def enviar_notificaion():
                 if tarea.tipo == "Unica":
                     print("ENTRÓ AL IF 🔥 Unica")
                     if ultima_notificacion != id_tarea and tarea.estado == "Pendiente":
-                        notificacion(tarea.nombre.title(),f"Ya es hora de completar la tarea de {tarea.nombre} \n{frase_motivadora}")
+                        notificacion_tareas(tarea.nombre.title(),f"Ya es hora de completar la tarea de {tarea.nombre} \n{frase_motivadora}")
                     
                         with open(RUTA_MEMORIA_NOTI, "w") as f:
                             f.write(id_tarea)
@@ -63,16 +69,16 @@ def enviar_notificaion():
                     if str(fecha) in tarea.estado:
                         print("Fecha conside con estado")
                         return
-                    elif tarea.estado == "Pendiente" and ultima_notificacion != id_tarea:
-                        print(f"Enviado {tarea.estado}")
-                        notificacion(tarea.nombre.title(),f"Ya es hora de completar la tarea de {tarea.nombre} \n{frase_motivadora}")
+                    elif tarea.estado == "Pendiente" and ultima_notificacion != id_tarea and dia_hoy in tarea.dias:
+                        print(f"Enviado {tarea.estado} Pendiente")
+                        notificacion_tareas(tarea.nombre.title(),f"Ya es hora de completar la tarea de {tarea.nombre} \n{frase_motivadora}")
 
                         with open(RUTA_MEMORIA_NOTI, "w") as f:
                             f.write(id_tarea)
 
-                    elif ultima_notificacion != id_tarea:
+                    elif ultima_notificacion != id_tarea and dia_hoy in tarea.dias:
                         print(f"Enviando {tarea.estado}")
-                        notificacion(tarea.nombre.title(),f"Ya es hora de completar la tarea de {tarea.nombre} \n{frase_motivadora}")
+                        notificacion_tareas(tarea.nombre.title(),f"Ya es hora de completar la tarea de {tarea.nombre} \n{frase_motivadora}")
                     
                         with open(RUTA_MEMORIA_NOTI, "w") as f:
                             f.write(id_tarea)
@@ -82,12 +88,36 @@ def enviar_notificaion():
                     else:
                         print("No notifique")
 
+def enviar_notificacion_diaria():
+    hora = datetime.now().strftime("%H:%M")
+    fecha = datetime.now().strftime("%d/%m/%Y")
+
+    tareas, historial, puntos_v, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+
+    todos = tareas + tareas_rutina
+    faltantes = False
+
+    for tarea in todos:
+        if tarea.estado == "Pendiente" or tarea.estado != f"Habito completado el {fecha}":
+            faltantes = True
+    
+    if todos:
+        if faltantes:
+            if hora == "21:00":
+                print("aqui")
+                print(f"Enviando Notificación diaria {hora}")
+                notificacion_tareas("Evaluacion Diaria", "¿Ya registraste tus habitos y tareas? ¡Aun estas a tiempo!")
+        else:
+            if hora == "21:00":
+                notificacion_tareas("Evaluacion Diaria", "Felicidades hoy hiciste un buen trabajo")
+
 def daemon_notificaciones():
     print("🚀 Vigilante de Disciplina iniciado...")
-    print("Version 1.01")
+    print("Version 1.2")
 
     while True:
-        enviar_notificaion()
+        enviar_notificacion_diaria()
+        enviar_notificacion()
         time.sleep(15)
 
 if __name__ == "__main__":
