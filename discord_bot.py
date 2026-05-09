@@ -117,7 +117,20 @@ async def fallo(ctx, numero: int):
 
     except IndexError:
         await ctx.send("Ese número de tarea no existe \n Revisa la lista con `!tareas`.")
-        
+
+@bot.command()
+async def registro(ctx):
+    tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+    
+    for registro in registro_cumplidos:
+        if "Habito completado" in registro["Estado"]:
+            estado = "🟦"
+            tarea_racha = registro["Racha"]
+        else:
+            estado = "🟥"
+            tarea_racha = "FALLIDA"
+        await ctx.send(f"- {estado} | Tarea: {registro["Nombre"]} | {registro["Estado"]} | {tarea_racha} |")
+    return
 
 @bot.command()
 async def estadisticas(ctx, tipo_lista: str):
@@ -162,7 +175,7 @@ async def racha(ctx):
     await ctx.send(f"🏆 **Tu mayor racha actual es en:** {tarea_top.nombre}\n**Días:** {max_racha} {fuego}")
 
 @bot.command()
-async def frases(ctx):
+async def frase(ctx):
     tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
     if len(lista_frases) == 0:
         await ctx.send("**La fotaleza del hombre radica en el dominio de su mente**")
@@ -179,21 +192,22 @@ async def frases(ctx):
 async def ayuda(ctx):
     embed = discord.Embed(
         title="Guía del Gestor de Tareas 📋",
-        description="¿Deseas gestionar tus tareas? ejecuta el scrips 'main_menu' y tendras todas las opciones disponibles\n \nAquí tienes los comandos disponibles para mantener tu disciplina:",
+        description="¿Deseas gestionar tus tareas? usa la app de Gestionar de Diciplina y tendras todas las opciones disponibles\n \nAquí tienes los comandos disponibles para mantener tu disciplina:",
         color=discord.Color.blue()
     )
     
     embed.add_field(name="`!tareas_l`", value="Lista todos tus hábitos y su estado actual.", inline=False)
     embed.add_field(name="`!hecho [número]`", value="Marca el hábito como completado hoy y sube tu racha. 🔥", inline=False)
-    embed.add_field(name="`!fallo [número]`", value="Marca el hábito como fallido reiniciando la racha y su estado", inline=False)
+    embed.add_field(name="`!fallo [número]`", value="Marca el hábito como fallido reiniciando la racha y su estado.", inline=False)
+    embed.add_field(name="`!registro`", value="Muestra el registro de habitos cuomplidos y fallidos.", inline=False)
     embed.add_field(name="`!estadisticas`", value="Muesta las estadisticas de tus tareas y rutinas, argumentos disponibles 'tarea' y 'rutina'.", inline=False)
     embed.add_field(name="`!racha`", value="Muesta tu mejor racha actualmente junto con la cantidad de días.", inline=False)
     embed.add_field(name="`!frases`", value="Muesta frases aletorias que hayas añadido en la lista de frases.", inline=False)
     embed.add_field(name="`!ayuda`", value="Muestra este mensaje de soporte.", inline=False)
-    embed.add_field(name="`VERSION`", value="1.1 Bot Discord", inline=False)
+    embed.add_field(name="`VERSION`", value="1.2 Bot Discord", inline=False)
 
 
-    embed.set_footer(text="¡Sigue en el camino asi!")
+    embed.set_footer(text="¡Matento fuerte!")
     
     await ctx.send(embed=embed)
 

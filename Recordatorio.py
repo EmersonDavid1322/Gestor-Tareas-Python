@@ -13,7 +13,7 @@ def revisar_y_enviar():
         pendientes = []
         tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
-        dias_semana = ["lunes","martes","miércoles","jueves","viernes","sabado","domingo"]
+        dias_semana = ["lunes","martes","miércoles","jueves","viernes","sábado","domingo"]
         indice_hoy = datetime.now().weekday()
         dia_actual_texto = dias_semana[indice_hoy]
         

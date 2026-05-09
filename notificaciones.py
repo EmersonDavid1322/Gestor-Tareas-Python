@@ -42,6 +42,7 @@ def enviar_notificacion():
 
     nombres_dias = get_day_names('wide', locale='es')
     dia_hoy = nombres_dias[hoy.weekday()]
+    print(dia_hoy)
 
     tareas, historial, puntos_v, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
@@ -89,6 +90,7 @@ def enviar_notificacion():
                         print("No notifique")
 
 def enviar_notificacion_diaria():
+
     hora = datetime.now().strftime("%H:%M")
     fecha = datetime.now().strftime("%d/%m/%Y")
 
@@ -113,12 +115,12 @@ def enviar_notificacion_diaria():
 
 def daemon_notificaciones():
     print("🚀 Vigilante de Disciplina iniciado...")
-    print("Version 1.2")
+    print("Version 1.3")
 
     while True:
         enviar_notificacion_diaria()
         enviar_notificacion()
-        time.sleep(15)
+        time.sleep(60)
 
 if __name__ == "__main__":
     daemon_notificaciones()

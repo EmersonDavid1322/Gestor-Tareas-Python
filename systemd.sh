@@ -74,6 +74,11 @@ systemctl --user start notificador
 
 sudo systemctl restart bot_disciplina.service
 systemctl --user restart notificador
+
+DESTINO_APP="$HOME/apps/gestor"
+sudo chcon -t bin_t "$DESTINO_APP/bot_disciplina"
+sudo chcon -t bin_t "$DESTINO_APP/notificador"
+
 echo ""
 echo "📊 Estado BOT:"
 sudo systemctl status bot_disciplina.service --no-pager

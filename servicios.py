@@ -67,59 +67,55 @@ def completar(id):
         tareas, historial, puntos_v, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
         marcar_tarea = validar_tarea_id(id,tareas,tareas_rutina)
 
-        if marcar_tarea is None:
-            messagebox.showwarning("Completar",f"Tarea NO encontrada")
-
-        else:
-            if marcar_tarea.tipo == "Unica":
-                if marcar_tarea.estado == "Completada":
-                    messagebox.showwarning("Completar",f"La tarea {marcar_tarea.nombre} ya a sido marcada")
-                else:
-                    marcar_tarea.estado = "Completada"
-                    messagebox.showinfo("Completar","¡Felicidades! Has completado la tarea, sigue asi")
-                    historial.append("Tarea completada: " + marcar_tarea.nombre)
-                    if marcar_tarea.prioridad == "Alta":
-                        puntaje = 15
-                        puntos_v += puntaje
-                    elif marcar_tarea.prioridad == "Media":
-                        puntaje = 10
-                        puntos_v += puntaje
-                    else:
-                        puntaje = 5
-                        puntos_v += puntaje
-                    messagebox.showinfo("Completar",f"¡Felicidades! Tu puntaje de diciplina subio a: {puntaje} sigue asi")
-                    guardar_datos(tareas, historial, puntos_v,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+        if marcar_tarea.tipo == "Unica":
+            if marcar_tarea.estado == "Completada":
+                messagebox.showwarning("Completar",f"La tarea {marcar_tarea.nombre} ya a sido marcada")
             else:
-                fecha_m = datetime.now().strftime("%d/%m/%Y")
-
-                if f"Completada {str(fecha_m)}" in marcar_tarea.estado:
-                    messagebox.showwarning("Completar","Tarea ya marcada por hoy")
-
+                marcar_tarea.estado = "Completada"
+                messagebox.showinfo("Completar","¡Felicidades! Has completado la tarea, sigue asi")
+                historial.append("Tarea completada: " + marcar_tarea.nombre)
+                if marcar_tarea.prioridad == "Alta":
+                    puntaje = 15
+                    puntos_v += puntaje
+                elif marcar_tarea.prioridad == "Media":
+                    puntaje = 10
+                    puntos_v += puntaje
                 else:
+                    puntaje = 5
+                    puntos_v += puntaje
+                messagebox.showinfo("Completar",f"¡Felicidades! Tu puntaje de diciplina subio a: {puntaje} sigue asi")
+                guardar_datos(tareas, historial, puntos_v,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+        else:
+            fecha_m = datetime.now().strftime("%d/%m/%Y")
 
-                    marcar_tarea.estado = f"Habito completado el {fecha_m}"
-                    marcar_tarea.racha += 1
-                    if marcar_tarea.prioridad == "Alta":
-                        puntaje = 15
-                        puntos_v += puntaje
-                    elif marcar_tarea.prioridad == "Media":
-                        puntaje = 10
-                        puntos_v += puntaje
-                    else:
-                        puntaje = 5
-                        puntos_v += puntaje
-                    messagebox.showinfo("Completar","¡Felicidades! Has completado tu habito, sigue asi")
-                    messagebox.showinfo("Completar",f"¡Felicidades! Tu puntaje de diciplina subio a: {puntaje} sigue asi")
-                    registro_cumplidos.append({
-                        "Nombre": marcar_tarea.nombre,
-                        "Estado": marcar_tarea.estado,
-                        "Prioridad": marcar_tarea.prioridad,
-                        "Racha": marcar_tarea.racha
-                    })
-                    historial.append(
-                        f"Habito de {marcar_tarea.nombre} completo racha de {marcar_tarea.racha}"
-                    )
-                    guardar_datos(tareas, historial, puntos_v,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+            if f"Habito completado el {str(fecha_m)}" in marcar_tarea.estado: #Usamor estado completo porque corroboramos fecha tambien al fallar
+                messagebox.showwarning("Completar","Tarea ya marcada por hoy")
+
+            else:
+
+                marcar_tarea.estado = f"Habito completado el {fecha_m}"
+                marcar_tarea.racha += 1
+                if marcar_tarea.prioridad == "Alta":
+                    puntaje = 15
+                    puntos_v += puntaje
+                elif marcar_tarea.prioridad == "Media":
+                    puntaje = 10
+                    puntos_v += puntaje
+                else:
+                    puntaje = 5
+                    puntos_v += puntaje
+                messagebox.showinfo("Completar","¡Felicidades! Has completado tu habito, sigue asi")
+                messagebox.showinfo("Completar",f"¡Felicidades! Tu puntaje de diciplina subio a: {puntaje} sigue asi")
+                registro_cumplidos.append({
+                    "Nombre": marcar_tarea.nombre,
+                    "Estado": marcar_tarea.estado,
+                    "Prioridad": marcar_tarea.prioridad,
+                    "Racha": marcar_tarea.racha
+                })
+                historial.append(
+                    f"Habito de {marcar_tarea.nombre} completo racha de {marcar_tarea.racha}"
+                )
+                guardar_datos(tareas, historial, puntos_v,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
 
 def fallar_tarea(id):
     fecha_m = datetime.now().strftime("%d/%m/%Y")
@@ -133,8 +129,14 @@ def fallar_tarea(id):
     
     tarea_f.racha = 0
     tarea_f.estado = f"Fallida {fecha_m}"
-    messagebox.showinfo("Fallar","Lo importante no es cuantas veces caes, sino la resilencia de volver a levantarte")
-    historial.append(f"Se a fallado la tarea '{tarea_f.nombre}' el {fecha_m}")
+    messagebox.showinfo("Fallar","Lo importante no es cuantas veces caes, sino la fuerza que te hace volver a levantarte")
+    historial.append(f"Se a fallado la tarea '{tarea_f.nombre}' el '{fecha_m}'")
+    registro_cumplidos.append({
+                    "Nombre": tarea_f.nombre,
+                    "Estado": tarea_f.estado,
+                    "Prioridad": tarea_f.prioridad,
+                    "Racha": tarea_f.racha
+                })
     guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
     return
 

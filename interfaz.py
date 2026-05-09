@@ -1,7 +1,4 @@
 import customtkinter as ctk
-import subprocess
-import os
-import sys
 from storage import cargar_datos
 from config import VentanaConfiguraciones
 from interfaz_gestor import ventanaGestionarTareas
@@ -13,7 +10,7 @@ class VentanaMenu(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Menu")
-        self.geometry("600x400")
+        self.geometry("600x450")
 
         #TITULO
         self.titulo = ctk.CTkLabel(self, text="Menu", font=("Roboto", 20,"bold"))
@@ -23,20 +20,24 @@ class VentanaMenu(ctk.CTk):
         self.btn_gestor = ctk.CTkButton(self, text="Gestionar Tareas", command=self.añadir_tarea)
         self.btn_gestor.pack(pady=20)
 
-        #Estadisticas
-        self.btn_estadisticas = ctk.CTkButton(self, text="Estadisticas", command=VentanaEstadisticas)
-        self.btn_estadisticas.pack(pady=20)
+        #Registro
+        self.btn_registro = ctk.CTkButton(self, text="Registro", command=VentanaRegistro)
+        self.btn_registro.pack(pady=20)
 
         #Historial
         self.btn_historial = ctk.CTkButton(self, text="Historial", command=VentanaHistorial)
         self.btn_historial.pack(pady=20)
+
+        #Estadisticas
+        self.btn_estadisticas = ctk.CTkButton(self, text="Estadisticas", command=VentanaEstadisticas)
+        self.btn_estadisticas.pack(pady=20)
 
         #Configuraciones
         self.btn_gestor = ctk.CTkButton(self, text="Configuraciones", command=VentanaConfiguraciones)
         self.btn_gestor.pack(pady=20)
 
     def añadir_tarea(self):
-        self.withdraw() # El menú se esconde
+        self.withdraw() 
         ventana_hija = ventanaGestionarTareas(self)
 
 class VentanaHistorial(ctk.CTkToplevel):
@@ -77,6 +78,53 @@ class VentanaHistorial(ctk.CTkToplevel):
             
             # Una línea sutil de separación
             separador = ctk.CTkFrame(self.scroll_historial, height=1, fg_color="#34495e")
+            separador.pack(fill="x", padx=10, pady=2)
+
+class VentanaRegistro(ctk.CTkToplevel):
+    def __init__(self):
+        super().__init__()
+        self.title("Registro")
+        self.geometry("650x400")
+
+        #TITULO
+        self.titulo = ctk.CTkLabel(self, text="Registro De Habitos", font=("Roboto", 20,"bold"))
+        self.titulo.pack(pady=20)
+
+        self.scroll_registro = ctk.CTkScrollableFrame(self, width=550, height=350)
+        self.scroll_registro.pack(padx=20, pady=10, fill="both", expand=True)
+
+        self.cargar_registro_visual()
+    
+    def cargar_registro_visual(self):
+        tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+
+        registro_reciente = registro_cumplidos[::-1]
+
+        for i, registro in enumerate(registro_reciente):
+            # Calculamos el número real (si hay 10 items, el primero arriba es el 10)
+            numero = len(registro_cumplidos) - i
+
+            if "Fallida" in registro["Estado"]:
+                estado = "X"
+                tarea_racha = "FALLIDA"
+            else:
+                estado = "🟦"
+                tarea_racha = registro["Racha"]
+            
+            # Creamos una fila para cada registro
+            fila = ctk.CTkFrame(self.scroll_registro, fg_color="transparent")
+            fila.pack(fill="x", pady=2)
+
+            # Texto del número (con color diferente para que resalte)
+            lbl_num = ctk.CTkLabel(fila, text=f"[{numero:03d}]", font=("Consolas", 12), text_color="#5dade2")
+            lbl_num.pack(side="left", padx=5)
+
+            # El mensaje del historial
+            lbl_texto = ctk.CTkLabel(fila, text=f"- {estado} | Nombre: {registro["Nombre"]} | Estado: {registro["Estado"]} | Racha: {tarea_racha} |", font=("Roboto", 12))
+            lbl_texto.pack(side="left", padx=5)
+            
+            # Una línea sutil de separación
+            separador = ctk.CTkFrame(self.scroll_registro, height=1, fg_color="#34495e")
             separador.pack(fill="x", padx=10, pady=2)
 
 
@@ -145,7 +193,7 @@ class VentanaEstadisticas(ctk.CTkToplevel):
     
     def mostrar_progreso(self, puntos_actuales):
         # Definimos la meta (ejemplo: 100 puntos para subir de rango)
-        meta_puntos = 100
+        meta_puntos = 1000
         
         # Calculamos el porcentaje (debe ser entre 0.0 y 1.0)
         porcentaje = puntos_actuales / meta_puntos
@@ -154,7 +202,7 @@ class VentanaEstadisticas(ctk.CTkToplevel):
         if porcentaje > 1.0: porcentaje = 1.0
 
         # Título del Rango
-        rango = "Novato" if puntos_actuales < 100 else "Guerrero"
+        rango = "Novato" if puntos_actuales < 1000 else "Guerrero"
         self.lbl_rango = ctk.CTkLabel(self, text=f"Rango: {rango}", font=("Roboto", 18, "bold"))
         self.lbl_rango.pack(pady=5)
 

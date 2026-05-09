@@ -3,7 +3,7 @@ import tkinter.messagebox as messagebox
 from storage import cargar_datos
 from servicios import agregar_tarea, completar, fallar_tarea, eliminar_tarea, mostrar_info_tarea
 
-print("Version 1.1 Interfaz")
+print("Version 1.2 Interfaz")
 
 class ventanaGestionarTareas(ctk.CTkToplevel):
     def __init__(self,menu_principal):
@@ -81,7 +81,7 @@ class VentanaAnadirTareas(ctk.CTkToplevel):
         self.frame_dias = ctk.CTkFrame(self, fg_color="transparent")
         self.frame_dias.pack(pady=10)
 
-        self.dias_disponibles = ["lunes","martes","miércoles","jueves","viernes","sabado","domingo"]
+        self.dias_disponibles = ["lunes","martes","miércoles","jueves","viernes","sábado","domingo"]
         self.dias_selccionados = {}
 
         for dia in self.dias_disponibles:
@@ -184,13 +184,13 @@ class VentanaTareas(ctk.CTkToplevel):
 
             #completar
             boton_compl= ctk.CTkButton(fila, text="Completar",width=30,fg_color="#2B2FA5",
-                                        command=lambda id_tarea=tarea.id, r=es_rutina: completar(id_tarea))
+                                        command=lambda id_tarea=tarea.id, r=es_rutina: self.actualizar_completar(id_tarea))
             boton_compl.pack(side="right", padx=10)
 
             #Fallar
             if tarea.tipo == "Rutina":
                 boton_elimnar = ctk.CTkButton(fila,text="Falle", width=30, fg_color="#922b21", hover_color="#641e16",
-                                                command=lambda id_tarea = tarea.id : fallar_tarea(id_tarea))
+                                                command=lambda id_tarea = tarea.id : self.actualizar_fallar(id_tarea))
                 boton_elimnar.pack(side="right", padx=10)
             
             #mostar informacion completa de la tarea
@@ -198,6 +198,14 @@ class VentanaTareas(ctk.CTkToplevel):
                                         command=lambda id_tarea=tarea.id, r=es_rutina: mostrar_info_tarea(id_tarea,r))
             boton_info.pack(side="right", padx=10)
 
+    def actualizar_fallar(self,id_tarea):
+        fallar_tarea(id_tarea)
+        self.mostrar_tareas()
+    
+    def actualizar_completar(self,id_tarea):
+        completar(id_tarea)
+        self.mostrar_tareas()
+    
     def actualizar_eliminar(self,id_tarea,idx,r,msg):
         eliminar_tarea(id_tarea,idx,r,msg)
         self.mostrar_tareas()
