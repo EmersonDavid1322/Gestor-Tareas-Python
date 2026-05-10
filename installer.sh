@@ -53,6 +53,13 @@ else
     echo "⚠️ No se encontró la carpeta 'noti'"
 fi
 
+if [ -f "$BASE_DIR/icono.png" ]; then
+    cp "$BASE_DIR/icono.png" "$DESTINO_APP/"
+    echo "Icono copiado"
+else
+    echo "⚠️ No se encontró el icono"
+fi
+
 echo "🧹 Limpieza final..."
 rm -rf "$BASE_DIR/build"
 rm -rf "$BASE_DIR/dist"

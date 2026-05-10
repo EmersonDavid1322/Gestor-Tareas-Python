@@ -3,6 +3,8 @@ import tkinter.messagebox as messagebox
 from clases import TareaRutina,Tarea
 from storage import guardar_datos,cargar_datos
 
+print("Versión 1.2 servicios")
+
 def validar_tarea_id(id,tareas,tareas_rutina):
     for t in tareas + tareas_rutina:
         if t.id == id:
@@ -106,6 +108,7 @@ def completar(id):
                     puntos_v += puntaje
                 messagebox.showinfo("Completar","¡Felicidades! Has completado tu habito, sigue asi")
                 messagebox.showinfo("Completar",f"¡Felicidades! Tu puntaje de diciplina subio a: {puntaje} sigue asi")
+                felicitar_racha(marcar_tarea,marcar_tarea.racha)
                 registro_cumplidos.append({
                     "Nombre": marcar_tarea.nombre,
                     "Estado": marcar_tarea.estado,
@@ -182,3 +185,11 @@ def mostrar_info_tarea(id, r):
             texto_info += f"\n🗓️ Días: {dias_str}"
 
         messagebox.showinfo(f"Detalles de {t.nombre}", texto_info)
+
+def felicitar_racha(tarea,racha):
+    if racha == 3:
+        messagebox.showinfo("Felicidades",f"Felicidades por tu racha de 3 dias en el habtito de *{tarea.nombre}*, ¡SIgue asi! 🔥")
+    elif racha == 7:
+        messagebox.showinfo("Felicidades",f"¡Felicidades por tu racha de una semana! en el habtito de *{tarea.nombre}*, ¡SIgue asi! 🔥")
+    elif racha == 30:
+        messagebox.showinfo("Felicidades",f"¡Felicidades por tu racha de un mes! en el habtito de *{tarea.nombre}*, ¡SIgue asi! 🔥")

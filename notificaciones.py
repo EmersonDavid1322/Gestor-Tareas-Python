@@ -1,5 +1,4 @@
 from plyer import notification
-from playsound import playsound
 import subprocess
 import os
 from datetime import datetime
@@ -17,6 +16,7 @@ else:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 RUTA_SONIDO = os.path.join(BASE_DIR, "noti", "dota2-notification.mp3")
+RUTA_ICONO = os.path.join(BASE_DIR,"icono.png")
 
 def notificacion_tareas(titulo, mensaje):
     print("Reproduciendo sonido:", RUTA_SONIDO)
@@ -25,6 +25,7 @@ def notificacion_tareas(titulo, mensaje):
         title=f"🥊 {titulo}",
         message=mensaje,
         app_name='Gestor de Disciplina',
+        app_icon=RUTA_ICONO,
         timeout=10
     )
 
@@ -42,7 +43,6 @@ def enviar_notificacion():
 
     nombres_dias = get_day_names('wide', locale='es')
     dia_hoy = nombres_dias[hoy.weekday()]
-    print(dia_hoy)
 
     tareas, historial, puntos_v, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
@@ -67,7 +67,7 @@ def enviar_notificacion():
                         return
                 else:
                     print("Rutina")
-                    if str(fecha) in tarea.estado:
+                    if f"Habito completado el {fecha}" in tarea.estado:
                         print("Fecha conside con estado")
                         return
                     elif tarea.estado == "Pendiente" and ultima_notificacion != id_tarea and dia_hoy in tarea.dias:
@@ -87,7 +87,7 @@ def enviar_notificacion():
                         print(f"✅ Notificado: {id_tarea}")
                         return
                     else:
-                        print("No notifique")
+                        print("No notifique rutina")
 
 def enviar_notificacion_diaria():
 
@@ -120,7 +120,7 @@ def daemon_notificaciones():
     while True:
         enviar_notificacion_diaria()
         enviar_notificacion()
-        time.sleep(60)
+        time.sleep(15)
 
 if __name__ == "__main__":
     daemon_notificaciones()

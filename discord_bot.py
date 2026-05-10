@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 import random
-import os
+from babel.dates import get_day_names
 from storage import guardar_datos, cargar_datos
 tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
@@ -41,9 +41,20 @@ async def on_command_error(ctx, error):
     
 
 @bot.command()
-async def tareas_l (ctx):
+async def tareas(ctx, tipo: str):
     fecha_hoy = datetime.now().strftime("%d/%m/%Y")
+
+    hoy = datetime.now()
+    nombres_dias = get_day_names('wide', locale='es')
+    dia_hoy = nombres_dias[hoy.weekday()]
+
     tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+
+    if tipo == "hoy":
+        todas = False
+    elif tipo == "todas":
+        todas = True
+
     if not tareas_rutina:
         await ctx.send("No hay tareas pendientes. ¡Día libre! ☕")
         return
@@ -51,17 +62,18 @@ async def tareas_l (ctx):
     mensaje = "**📋 TUS TAREAS ACTUALES:**\n"
 
     for i, tarea in enumerate(tareas_rutina, start=1):
-        if not tarea.estado == "Pendiente":
-            estado = "✅"
-        if fecha_hoy in str(tarea.estado):
-            estado = "✅"
+        if todas == False:
+            if dia_hoy in tarea.dias:
+                if tarea.estado == f"Habito completado el {fecha_hoy}":
+                    estado = "✅"
+                else:
+                    estado = "❌"
+                racha_visual = "🔥" * tarea.racha
+                if tarea.racha == 0:
+                    tarea.racha = "No hay racha"
+                mensaje += f"\n{i}. {estado} **{tarea.nombre}** \nHora: {tarea.hora} \nDias: {tarea.dias} \n({tarea.racha} {racha_visual})"
         else:
-            estado = "❌"
-        racha_visual = "🔥" * tarea.racha
-        if tarea.racha == 0:
-            tarea.racha = "No hay racha"
-        mensaje += f"\n{i}. {estado} **{tarea.nombre}** \nHora: {tarea.hora} \nDias: {tarea.dias} \n({tarea.racha} {racha_visual})"
-    
+            mensaje += f"\n{i}. **{tarea.nombre}** \nEstado: {tarea.estado} \nHora: {tarea.hora} \nDias: {tarea.dias} \n({tarea.racha})"
     await ctx.send(mensaje)
 
 @bot.command()
@@ -196,7 +208,7 @@ async def ayuda(ctx):
         color=discord.Color.blue()
     )
     
-    embed.add_field(name="`!tareas_l`", value="Lista todos tus hábitos y su estado actual.", inline=False)
+    embed.add_field(name="`!tareas [Tipo]`", value="Lista todos tus hábitos y su estado actual, para tus tareas de hoy utiliza 'hoy' y para ver todas tus tareas utiliza 'todas'", inline=False)
     embed.add_field(name="`!hecho [número]`", value="Marca el hábito como completado hoy y sube tu racha. 🔥", inline=False)
     embed.add_field(name="`!fallo [número]`", value="Marca el hábito como fallido reiniciando la racha y su estado.", inline=False)
     embed.add_field(name="`!registro`", value="Muestra el registro de habitos cuomplidos y fallidos.", inline=False)
@@ -204,7 +216,7 @@ async def ayuda(ctx):
     embed.add_field(name="`!racha`", value="Muesta tu mejor racha actualmente junto con la cantidad de días.", inline=False)
     embed.add_field(name="`!frases`", value="Muesta frases aletorias que hayas añadido en la lista de frases.", inline=False)
     embed.add_field(name="`!ayuda`", value="Muestra este mensaje de soporte.", inline=False)
-    embed.add_field(name="`VERSION`", value="1.2 Bot Discord", inline=False)
+    embed.add_field(name="`VERSION`", value="1.3 Bot Discord", inline=False)
 
 
     embed.set_footer(text="¡Matento fuerte!")
