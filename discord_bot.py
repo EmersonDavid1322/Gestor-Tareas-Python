@@ -4,7 +4,9 @@ from datetime import datetime
 import random
 from babel.dates import get_day_names
 from storage import guardar_datos, cargar_datos
-tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+from base_sql import cargar_tareas,cargar_registros,guardar_historial,guardar_registros,estado_tarea
+
+puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
 print("Version 1.1 Bot Discord")
 
@@ -15,7 +17,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 @bot.event
 async def on_ready():
-    tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+    puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
     print(f'✅ Bot conectado como {bot.user}')
     try:
         id_canal = int(canal)
@@ -42,13 +44,12 @@ async def on_command_error(ctx, error):
 
 @bot.command()
 async def tareas(ctx, tipo: str):
+    tareas_u, tareas_rutina = cargar_tareas()
     fecha_hoy = datetime.now().strftime("%d/%m/%Y")
 
     hoy = datetime.now()
     nombres_dias = get_day_names('wide', locale='es')
     dia_hoy = nombres_dias[hoy.weekday()]
-
-    tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
     if tipo == "hoy":
         todas = False
@@ -78,7 +79,7 @@ async def tareas(ctx, tipo: str):
 
 @bot.command()
 async def hecho(ctx, numero: int):
-    tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+    tareas_u, tareas_rutina = cargar_tareas()
     fecha = datetime.now()
     fecha_m = fecha.strftime("%d/%m/%Y")
     
@@ -93,17 +94,12 @@ async def hecho(ctx, numero: int):
             await ctx.send(f"⚠️ La tarea **{tarea.nombre}** ya ha sido marcada como completa hoy.")
             return
 
-        tarea.estado = f"Habito completado el {fecha_m}"
-        tarea.racha += 1
-        registro_cumplidos.append({
-                "Nombre": tarea.nombre,
-                "Estado": tarea.estado,
-                "Prioridad": tarea.prioridad,
-                "Racha": tarea.racha
-            })
-        historial.append(f"Habito de {tarea.nombre} completo \n racha de dias {tarea.racha}")
+        estado = f"Habito completado el {fecha_m}"
+        racha =tarea.racha + 1
+        guardar_registros(f"Nombre: {tarea.nombre} ,Estado: {tarea.estado}, Prioridad: {tarea.prioridad}, racha: {tarea.racha}")
+        guardar_historial(f"Habito de {tarea.nombre} completo \n racha de dias {tarea.racha}")
 
-        guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal) 
+        estado_tarea(estado,racha,tarea)
         await ctx.send(f"⭐ ¡Muy bien! Has completado: **{tarea.nombre}**")
         racha_visual = "🔥" * tarea.racha
         await ctx.send(f"Tu racha actual es: ({tarea.racha} {racha_visual})")
@@ -114,7 +110,7 @@ async def hecho(ctx, numero: int):
 @bot.command()
 async def fallo(ctx, numero: int):
     fecha_m = datetime.now().strftime("%d/%m/%Y")
-    tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+    tareas_u, tareas_rutina = cargar_tareas()
     indice_real = numero -1
     try:
         tarea = tareas_rutina[indice_real]
@@ -123,32 +119,25 @@ async def fallo(ctx, numero: int):
         
     
         await ctx.send(f"La racha de la tarea **{tarea.nombre}** se reinicio a 0 \n racha de **🔥{tarea.racha}** días perdida")
-        tarea.racha = 0
-        tarea.estado = f"Fallida {fecha_m}"
-        guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal) 
+        racha = 0
+        estado = f"Fallida {fecha_m}"
+        estado_tarea(estado,racha,tarea)
 
     except IndexError:
         await ctx.send("Ese número de tarea no existe \n Revisa la lista con `!tareas`.")
 
 @bot.command()
 async def registro(ctx):
-    tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
-    
-    for registro in registro_cumplidos:
-        if "Habito completado" in registro["Estado"]:
-            estado = "🟦"
-            tarea_racha = registro["Racha"]
-        else:
-            estado = "🟥"
-            tarea_racha = "FALLIDA"
-        await ctx.send(f"- {estado} | Tarea: {registro["Nombre"]} | {registro["Estado"]} | {tarea_racha} |")
+    registro = cargar_registros()
+    for registro in registro:
+        await ctx.send(f"- | {registro} |")
     return
 
 @bot.command()
 async def estadisticas(ctx, tipo_lista: str):
-    tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+    tareas_u, tareas_rutina = cargar_tareas()
     if tipo_lista== "tarea":
-        lista = tareas
+        lista = tareas_u
     elif tipo_lista == "rutina":
         lista = tareas_rutina
     else:
@@ -188,7 +177,7 @@ async def racha(ctx):
 
 @bot.command()
 async def frase(ctx):
-    tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+    puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
     if len(lista_frases) == 0:
         await ctx.send("**La fotaleza del hombre radica en el dominio de su mente**")
     else:
@@ -214,9 +203,9 @@ async def ayuda(ctx):
     embed.add_field(name="`!registro`", value="Muestra el registro de habitos cuomplidos y fallidos.", inline=False)
     embed.add_field(name="`!estadisticas`", value="Muesta las estadisticas de tus tareas y rutinas, argumentos disponibles 'tarea' y 'rutina'.", inline=False)
     embed.add_field(name="`!racha`", value="Muesta tu mejor racha actualmente junto con la cantidad de días.", inline=False)
-    embed.add_field(name="`!frases`", value="Muesta frases aletorias que hayas añadido en la lista de frases.", inline=False)
+    embed.add_field(name="`!frase`", value="Muesta frases aletorias que hayas añadido en la lista de frases.", inline=False)
     embed.add_field(name="`!ayuda`", value="Muestra este mensaje de soporte.", inline=False)
-    embed.add_field(name="`VERSION`", value="1.3 Bot Discord", inline=False)
+    embed.add_field(name="`VERSION`", value="1.4 Bot Discord", inline=False)
 
 
     embed.set_footer(text="¡Matento fuerte!")

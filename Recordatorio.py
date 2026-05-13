@@ -1,5 +1,6 @@
 import requests
 from storage import cargar_datos
+from base_sql import cargar_tareas
 import os
 from datetime import datetime
 import random   
@@ -11,7 +12,8 @@ def revisar_y_enviar():
         fecha_hoy = datetime.now().strftime("%d/%m/%Y")
         hora_actual = datetime.now().strftime("%H:%M")
         pendientes = []
-        tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+        puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+        tareas, tareas_rutina = cargar_tareas()
 
         dias_semana = ["lunes","martes","miércoles","jueves","viernes","sábado","domingo"]
         indice_hoy = datetime.now().weekday()

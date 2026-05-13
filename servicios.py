@@ -2,13 +2,17 @@ from datetime import datetime
 import tkinter.messagebox as messagebox
 from clases import TareaRutina,Tarea
 from storage import guardar_datos,cargar_datos
+from base_sql import guardar_tareas,guardar_historial,guardar_registros, cargar_tareas,estado_tarea,eliminar_tarea_sql
 
-print("Versión 1.2 servicios")
+print("Versión 1.3 servicios")
 
-def validar_tarea_id(id,tareas,tareas_rutina):
+
+
+def validar_tarea_id(id,tipo,tareas,tareas_rutina):
     for t in tareas + tareas_rutina:
-        if t.id == id:
-            return t
+        if tipo == t.tipo:
+            if t.id == id:
+                return t
 
 def validar_tarea_nombre(nombre,tareas,tareas_rutina):
     for t in tareas + tareas_rutina:
@@ -21,61 +25,84 @@ def generar_id(tareas, tareas_rutina):
         return 1
     return max(t.id for t in todos) + 1
 
-def agregar_tarea(nombre,tipo,prioridad,tiempo,dias): 
-        tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
-        
-        id_tarea = generar_id(tareas,tareas_rutina)
+def agregar_tarea(tipo,nombre,prioridad,tiempo,dias): 
+        tareas, tareas_rutina = cargar_tareas()
+        id_tarea = 0
+
+        fecha = datetime.now().strftime("%d/%m/%Y")
+        estado = "Pendiente"
 
         if tipo == "Tarea":
-            tarea_datos = Tarea(id_tarea,nombre,prioridad,tiempo)
+            tipo_t  = "Unica"
+            tarea_datos = Tarea(id=id_tarea,
+                                creacion=fecha,
+                                estado=estado,
+                                tipo=tipo_t,
+                                nombre=nombre,
+                                prioridad=prioridad,
+                                hora=tiempo)
         else:
-            tarea_datos = TareaRutina(id_tarea,nombre,prioridad,tiempo,dias)
+            tipo_t = "Rutina"
+            racha = 0
+            tarea_datos = TareaRutina(
+                                id=id_tarea,
+                                creacion=fecha,
+                                estado=estado,
+                                tipo=tipo,
+                                racha=racha,
+                                nombre=nombre,
+                                prioridad=prioridad,
+                                hora=tiempo,
+                                dias=dias
+                                )
 
         tarea_añadir = validar_tarea_nombre(tarea_datos.nombre,tareas,tareas_rutina)
 
         if tarea_añadir is None:
             if tarea_datos.tipo == "Rutina":
                 tareas_rutina.append(tarea_datos)
-                historial.append("Se añadió la tarea rutinaria: " + tarea_datos.nombre)
-                guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+                guardar_tareas(tarea_datos.tipo,tarea_datos)
+                guardar_historial("Se añadió la tarea rutinaria: " + tarea_datos.nombre)
                 messagebox.showinfo("Añadir Tareas",f"Tarea rutina agregada {tarea_datos.nombre} correctamente")
                 return
             else:
                 tareas.append(tarea_datos)
-                historial.append("Se añadió la tarea unica: " + tarea_datos.nombre)
-                guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+                guardar_tareas(tarea_datos.tipo,tarea_datos)
+                guardar_historial("Se añadió la tarea unica: " + tarea_datos.nombre)
                 messagebox.showinfo("Añadir Tareas",f"Tarea agregada {tarea_datos.nombre} correctamente")
                 return
         else:
             if tarea_datos.tipo == "Rutina":
                 respuesta = messagebox.askyesno("Tarea Duplicada", f"La tarea '{nombre}' ya existe. ¿Deseas duplicarla?")
-                tareas_rutina.append(tarea_datos)
-                historial.append("Se añadió tarea rutina duplicada: " + tarea_datos.nombre)
-                guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
-                messagebox.showinfo("Añadir Tareas",f"Tarea agregada {tarea_datos.nombre} correctamente")
+                if respuesta:
+                    tareas_rutina.append(tarea_datos)
+                    guardar_tareas(tarea_datos.tipo,tarea_datos)
+                    guardar_historial("Se añadió tarea rutina duplicada: " + tarea_datos.nombre)
+                    messagebox.showinfo("Añadir Tareas",f"Tarea agregada {tarea_datos.nombre} correctamente")
                 return
             else:
                 respuesta = messagebox.askyesno("Tarea Duplicada", f"La tarea '{nombre}' ya existe. ¿Deseas duplicarla?")
                 if respuesta:
                     tareas.append(tarea_datos)
-                    historial.append("Se añadió tarea duplicada: " + tarea_datos.nombre)
-                    guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+                    guardar_tareas(tarea_datos.tipo,tarea_datos)
+                    guardar_historial("Se añadió tarea duplicada: " + tarea_datos.nombre)
                     messagebox.showinfo("Añadir Tareas",f"Tarea agregada {tarea_datos.nombre} correctamente")
-                    return
-                else:
-                    return
-                
-def completar(id):
-        tareas, historial, puntos_v, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
-        marcar_tarea = validar_tarea_id(id,tareas,tareas_rutina)
+                return
+
+def completar(id,tipo):
+        puntos_v, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+        tareas, tareas_rutina = cargar_tareas()
+
+        marcar_tarea = validar_tarea_id(id,tipo,tareas,tareas_rutina)
 
         if marcar_tarea.tipo == "Unica":
             if marcar_tarea.estado == "Completada":
                 messagebox.showwarning("Completar",f"La tarea {marcar_tarea.nombre} ya a sido marcada")
             else:
-                marcar_tarea.estado = "Completada"
+                estado = "Completada"
+                racha = None
                 messagebox.showinfo("Completar","¡Felicidades! Has completado la tarea, sigue asi")
-                historial.append("Tarea completada: " + marcar_tarea.nombre)
+                guardar_historial("Tarea completada: " + marcar_tarea.nombre)
                 if marcar_tarea.prioridad == "Alta":
                     puntaje = 15
                     puntos_v += puntaje
@@ -86,7 +113,8 @@ def completar(id):
                     puntaje = 5
                     puntos_v += puntaje
                 messagebox.showinfo("Completar",f"¡Felicidades! Tu puntaje de diciplina subio a: {puntaje} sigue asi")
-                guardar_datos(tareas, historial, puntos_v,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+                estado_tarea(estado,racha,marcar_tarea)
+                guardar_datos(puntos_v,webhook,lista_frases,usar_frase,token,canal)
         else:
             fecha_m = datetime.now().strftime("%d/%m/%Y")
 
@@ -95,8 +123,8 @@ def completar(id):
 
             else:
 
-                marcar_tarea.estado = f"Habito completado el {fecha_m}"
-                marcar_tarea.racha += 1
+                estado = f"Habito completado el {fecha_m}"
+                racha = marcar_tarea.racha + 1
                 if marcar_tarea.prioridad == "Alta":
                     puntaje = 15
                     puntos_v += puntaje
@@ -106,47 +134,38 @@ def completar(id):
                 else:
                     puntaje = 5
                     puntos_v += puntaje
+                estado_tarea(estado,racha,marcar_tarea)
                 messagebox.showinfo("Completar","¡Felicidades! Has completado tu habito, sigue asi")
                 messagebox.showinfo("Completar",f"¡Felicidades! Tu puntaje de diciplina subio a: {puntaje} sigue asi")
                 felicitar_racha(marcar_tarea,marcar_tarea.racha)
-                registro_cumplidos.append({
-                    "Nombre": marcar_tarea.nombre,
-                    "Estado": marcar_tarea.estado,
-                    "Prioridad": marcar_tarea.prioridad,
-                    "Racha": marcar_tarea.racha
-                })
-                historial.append(
+                guardar_registros(f"Nombre: {marcar_tarea.nombre} ,Estado: {marcar_tarea.estado}, Prioridad: {marcar_tarea.prioridad}, racha: {marcar_tarea.racha}")
+                guardar_historial(
                     f"Habito de {marcar_tarea.nombre} completo racha de {marcar_tarea.racha}"
                 )
-                guardar_datos(tareas, historial, puntos_v,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+                guardar_datos(puntos_v,webhook,lista_frases,usar_frase,token,canal)
 
-def fallar_tarea(id):
+def fallar_tarea(id,tipo):
     fecha_m = datetime.now().strftime("%d/%m/%Y")
-    tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+    tareas, tareas_rutina = cargar_tareas()
 
-    tarea_f = validar_tarea_id(id, tareas,tareas_rutina)
+    tarea_f = validar_tarea_id(id,tipo,tareas,tareas_rutina)
 
     if tarea_f.estado == "Pendiente" or "Fallida" in tarea_f.estado:
         messagebox.showerror("Fallar","Esta tarea no se a completado o ya ha sido marcada como fallida")
         return
     
-    tarea_f.racha = 0
-    tarea_f.estado = f"Fallida {fecha_m}"
+    racha = 0
+    estado = f"Fallida {fecha_m}"
+    estado_tarea(estado,racha,tarea_f)
     messagebox.showinfo("Fallar","Lo importante no es cuantas veces caes, sino la fuerza que te hace volver a levantarte")
-    historial.append(f"Se a fallado la tarea '{tarea_f.nombre}' el '{fecha_m}'")
-    registro_cumplidos.append({
-                    "Nombre": tarea_f.nombre,
-                    "Estado": tarea_f.estado,
-                    "Prioridad": tarea_f.prioridad,
-                    "Racha": tarea_f.racha
-                })
-    guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+    guardar_historial(f"Se a fallado la tarea '{tarea_f.nombre}' el '{fecha_m}'")
+    guardar_registros(f"Nombre: {tarea_f.nombre} ,Estado: {tarea_f.estado}, Prioridad: {tarea_f.prioridad}, racha: {tarea_f.racha}")
     return
 
-def eliminar_tarea(id_tarea,idx,r,msg):
-        tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+def eliminar_tarea(id_tarea,r,msg,tipo):
+        tareas, tareas_rutina = cargar_tareas()
 
-        tarea_eliminar = validar_tarea_id(id_tarea,tareas,tareas_rutina)
+        tarea_eliminar = validar_tarea_id(id_tarea,tipo,tareas,tareas_rutina)
 
         if msg:
             confirmacion = messagebox.askyesno("Elimnar","¿Desea eliminar esta tarea?")
@@ -155,22 +174,18 @@ def eliminar_tarea(id_tarea,idx,r,msg):
         
         if confirmacion:
             if r:
-                print(r)
-                tareas_rutina.pop(idx)
-                historial.append(f"Se eliminio el habito '{tarea_eliminar.nombre}'")
+                eliminar_tarea_sql(tarea_eliminar)
+                guardar_historial(f"Se eliminio el habito '{tarea_eliminar.nombre}'")
             else:
-                print(r)
-                tareas.pop(idx)
-                historial.append(f"Se eliminio la tarea '{tarea_eliminar.nombre}'")
-        
-            guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+                eliminar_tarea_sql(tarea_eliminar)
+                guardar_historial(f"Se eliminio la tarea '{tarea_eliminar.nombre}'")
 
-def mostrar_info_tarea(id, r):
-        tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
-        t = validar_tarea_id(id,tareas,tareas_rutina)
+def mostrar_info_tarea(id, r,tipo):
+        tareas, tareas_rutina = cargar_tareas()
+        t = validar_tarea_id(id,tipo,tareas,tareas_rutina)
 
         texto_info = (
-            f"📅 Creada: {t.fecha_creacion}\n"
+            f"📅 Creada: {t.creacion}\n"
             f"📝 ID: {t.id}"
             f"📝 Nombre: {t.nombre}\n"
             f"🏷️ Tipo: {t.tipo}\n"

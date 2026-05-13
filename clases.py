@@ -1,22 +1,22 @@
 from datetime import datetime
 
 class Tarea:
-    def __init__(self, id_tarea, nombre, prioridad,hora):
-        self.fecha_creacion = datetime.now().strftime("%d/%m/%Y")
-        self.id = id_tarea
+    def __init__(self,id,creacion,estado,tipo,nombre, prioridad,hora):
+        self.id = id
+        self.creacion = creacion
         self.nombre = nombre
-        self.estado = "Pendiente"
+        self.estado = estado
         self.hora = hora
         self.prioridad = prioridad
-        self.tipo = "Unica"
+        self.tipo = tipo
     
     def mostrar_informacion(self):
         print(f"|Fecha Creación: {self.fecha_creacion} | Nombre: {self.nombre} | Estado: {self.estado} | Hora: {self.hora} | Prioridad: {self.prioridad} |\n")
 
     def a_diccionario(self):
         return {
-            "creacion": self.fecha_creacion,
             "id": self.id,
+            "creacion": self.fecha_creacion,
             "nombre": self.nombre,
             "estado": self.estado,
             "hora": self.hora,
@@ -24,10 +24,9 @@ class Tarea:
             "tipo": self.tipo
         }
 class TareaRutina(Tarea):
-    def __init__(self, id_tarea, nombre, prioridad,hora,dias):
-        super().__init__(id_tarea,nombre, prioridad,hora)
-        self.tipo = "Rutina"
-        self.racha = 0
+    def __init__(self,id,creacion,estado,tipo,racha,nombre, prioridad,hora,dias):
+        super().__init__(id,creacion,estado,tipo,nombre, prioridad,hora)
+        self.racha = racha
         self.dias = dias
     
     def mostrar_informacion(self):

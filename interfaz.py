@@ -1,7 +1,12 @@
 import customtkinter as ctk
-from storage import cargar_datos
+from storage import crear_archivos,cargar_datos
+from base_sql import cargar_historial,cargar_registros,cargar_tareas
 from config import VentanaConfiguraciones
 from interfaz_gestor import ventanaGestionarTareas
+from base_sql import crear_tablas
+
+crear_tablas()
+crear_archivos()
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -56,7 +61,7 @@ class VentanaHistorial(ctk.CTkToplevel):
         self.cargar_historial_visual()
     
     def cargar_historial_visual(self):
-        tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+        historial = cargar_historial()
 
         historial_reciente = historial[::-1]
 
@@ -96,20 +101,13 @@ class VentanaRegistro(ctk.CTkToplevel):
         self.cargar_registro_visual()
     
     def cargar_registro_visual(self):
-        tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+        registro_cumplidos = cargar_registros()
 
         registro_reciente = registro_cumplidos[::-1]
 
         for i, registro in enumerate(registro_reciente):
             # Calculamos el número real (si hay 10 items, el primero arriba es el 10)
             numero = len(registro_cumplidos) - i
-
-            if "Fallida" in registro["Estado"]:
-                estado = "X"
-                tarea_racha = "FALLIDA"
-            else:
-                estado = "🟦"
-                tarea_racha = registro["Racha"]
             
             # Creamos una fila para cada registro
             fila = ctk.CTkFrame(self.scroll_registro, fg_color="transparent")
@@ -120,7 +118,7 @@ class VentanaRegistro(ctk.CTkToplevel):
             lbl_num.pack(side="left", padx=5)
 
             # El mensaje del historial
-            lbl_texto = ctk.CTkLabel(fila, text=f"- {estado} | Nombre: {registro["Nombre"]} | Estado: {registro["Estado"]} | Racha: {tarea_racha} |", font=("Roboto", 12))
+            lbl_texto = ctk.CTkLabel(fila, text=registro)
             lbl_texto.pack(side="left", padx=5)
             
             # Una línea sutil de separación
@@ -141,7 +139,8 @@ class VentanaEstadisticas(ctk.CTkToplevel):
         self.estadisticas()
 
     def estadisticas(self):
-        tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+        puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+        tareas, tareas_rutina = cargar_tareas()
 
         lista_r = tareas_rutina
         lista_u = tareas

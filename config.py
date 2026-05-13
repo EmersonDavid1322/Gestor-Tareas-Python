@@ -2,7 +2,7 @@ import requests
 from storage import guardar_datos, cargar_datos
 import customtkinter as ctk
 import tkinter.messagebox as messagebox
-tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -58,7 +58,9 @@ class VentanaConfiguraciones(ctk.CTkToplevel):
 
     def mostrar_info(self):
         self.geometry("750x1000")
-        tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+    
+        puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+    
         self.pestañas = ctk.CTkTabview(self)
         self.pestañas.pack(expand=True, fill="both", padx=10, pady=10)
 
@@ -81,7 +83,7 @@ class VentanaConfiguraciones(ctk.CTkToplevel):
 
 
     def web_h(self):
-        tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+        puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
         try:
             webhook = self.entrada_webhook.get()
@@ -106,12 +108,12 @@ class VentanaConfiguraciones(ctk.CTkToplevel):
         except requests.exceptions.RequestException:
             messagebox.showerror("Configuraciones","❌ Error al enviar la prueba.",parent=self)
 
-        guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+        guardar_datos(puntos, webhook, lista_frases, usar_frase, token, canal)
         return webhook
 
 
     def token_bot_discord(self):
-        tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+        puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
         limpio_token = self.entrada_token.get().strip()
         limpio_canal = self.entrada_canal.get().strip()
 
@@ -120,7 +122,7 @@ class VentanaConfiguraciones(ctk.CTkToplevel):
             canal = limpio_canal
             validacion = limpio_canal.isdigit()
             if validacion:
-                guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+                guardar_datos(puntos, webhook, lista_frases, usar_frase, token, canal)
                 messagebox.showinfo("Configuraciones","Se a añadido correctamente",parent=self)
             else:
                 messagebox.showerror("Configuraciones","'Canal' no debe tener letras, solo digitos",parent=self)
@@ -133,25 +135,25 @@ class VentanaConfiguraciones(ctk.CTkToplevel):
                 if validacion:
                     token = limpio_token
                     canal = limpio_canal
-                    guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+                    guardar_datos(puntos, webhook, lista_frases, usar_frase, token, canal)
                     messagebox.showinfo("Configuraciones","Se a añadido correctamente",parent=self)
                 else:
                     messagebox.showerror("Configuraciones","'Canal' no debe tener letras, solo digitos",parent=self)
                     return
 
     def opcion_frase(self):
-        tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+        puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
         estado = self.switch_frases.get()
 
         if estado == 1:
             usar_frase = True
             self.switch_frases.select()
-            guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+            guardar_datos(puntos, webhook, lista_frases, usar_frase, token, canal)
         else:
             usar_frase = False
             self.switch_frases.deselect()
-            guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+            guardar_datos(puntos, webhook, lista_frases, usar_frase, token, canal)
 
     def agregar_frase_nueva(self):
         nueva_frase = self.entrada_frase.get()
@@ -159,7 +161,7 @@ class VentanaConfiguraciones(ctk.CTkToplevel):
         if nueva_frase.strip():
             lista_frases.append(nueva_frase)
             
-            guardar_datos(tareas, historial, puntos,tareas_rutina,registro_cumplidos,webhook,lista_frases,usar_frase,token,canal)
+            guardar_datos(puntos, webhook, lista_frases, usar_frase, token, canal)
 
             
             self.msg_frases.configure(text=f"Frase guardada correctamente. Ahora tienes {len(lista_frases)} frases.")

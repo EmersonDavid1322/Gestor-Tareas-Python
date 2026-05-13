@@ -5,6 +5,7 @@ from datetime import datetime
 from babel.dates import get_day_names
 import random
 import time
+from base_sql import cargar_tareas
 from storage import cargar_datos
 
 RUTA_MEMORIA_NOTI = "/tmp/ultima_noti_disciplina.txt"
@@ -44,7 +45,8 @@ def enviar_notificacion():
     nombres_dias = get_day_names('wide', locale='es')
     dia_hoy = nombres_dias[hoy.weekday()]
 
-    tareas, historial, puntos_v, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+    puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+    tareas,tareas_rutina = cargar_tareas()
 
     frase_motivadora = random.choice(lista_frases) if lista_frases else "Que tu disciplina no flaquee."
 
@@ -94,7 +96,7 @@ def enviar_notificacion_diaria():
     hora = datetime.now().strftime("%H:%M")
     fecha = datetime.now().strftime("%d/%m/%Y")
 
-    tareas, historial, puntos_v, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+    tareas, tareas_rutina = cargar_tareas()
 
     todos = tareas + tareas_rutina
     faltantes = False
@@ -115,7 +117,7 @@ def enviar_notificacion_diaria():
 
 def daemon_notificaciones():
     print("🚀 Vigilante de Disciplina iniciado...")
-    print("Version 1.3")
+    print("Version 1.4")
 
     while True:
         enviar_notificacion_diaria()
