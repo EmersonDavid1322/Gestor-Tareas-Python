@@ -6,9 +6,9 @@ BASE_DIR=$(dirname "$(readlink -f "$0")")
 # 2. Carpeta destino
 DESTINO_APP="$HOME/apps/gestor"
 
-rm  "$DESTINO_APP/bot_disciplina"
-rm  "$DESTINO_APP/GestorDisciplina"
-rm  "$DESTINO_APP/notificador"
+rm  -f "$DESTINO_APP/bot_disciplina"
+rm  -f "$DESTINO_APP/GestorDisciplina"
+rm  -f "$DESTINO_APP/notificador"
 rm  -rf "$DESTINO_APP/noti"
 echo "Elimanada la verison antigua"
 

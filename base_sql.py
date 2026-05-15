@@ -2,6 +2,7 @@ import sqlite3
 import os
 import json
 import sys
+from datetime import datetime
 from clases import Tarea,TareaRutina
 
 if getattr(sys, 'frozen', False):
@@ -51,7 +52,9 @@ def crear_tablas():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS historial (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        accion TEXT NOT NULL
+        tarea TEXT NOTT NULL,
+        accion TEXT NOT NULL,
+        fecha TEXTO NOT NULL 
     )
     """)
     conexion.commit()
@@ -63,7 +66,9 @@ def crear_tablas():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS registro (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        accion TEXT NOT NULL
+        tarea TEXT NOT NULL,
+        accion TEXT NOT NULL,
+        fecha TEXT NOT NULL
     )
     """)
     conexion.commit()
@@ -87,6 +92,11 @@ def guardar_tareas(tipo,tarea):
             tarea.prioridad,
             tarea.tipo
         ))
+        conexion.commit()
+        conexion.close()
+
+        accion = "Se agrego una Tarea Unica"
+        guardar_historial(tarea,accion)
 
     else:
         cursor.execute("""
@@ -103,33 +113,43 @@ def guardar_tareas(tipo,tarea):
             tarea.racha,
             json.dumps(tarea.dias,ensure_ascii=False)
         ))
-    conexion.commit()
-    conexion.close()
+        conexion.commit()
+        conexion.close()
 
-def guardar_historial(accion):
+        accion = "Se agrego una Tarea Rutina"
+        guardar_historial(tarea,accion)
+
+def guardar_historial(tarea,accion):
+    fecha = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
+
+    tarea_historial = f"| {tarea.creacion} | {tarea.nombre} | {tarea.tipo} |{tarea.estado} |{tarea.hora} | {tarea.prioridad} |"
+    
     conexion = sqlite3.connect("data/historial.db")
     cursor = conexion.cursor()
 
     cursor.execute("""
     INSERT INTO historial 
-    (accion)
-    VALUES (?)
+    (tarea,accion,fecha)
+    VALUES (?,?,?)
     """, (
-        (accion,)
+        (tarea_historial,accion,fecha)
     ))
     conexion.commit()
     conexion.close()
 
-def guardar_registros(accion):
+def guardar_registros(tarea,estado,accion):
+    fecha = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
+    tarea_tegistro = f"| {tarea.creacion} | {tarea.nombre} | {tarea.tipo} | {estado} | {tarea.hora} | {tarea.prioridad} |"
+
     conexion = sqlite3.connect("data/registro.db")
     cursor = conexion.cursor()
 
     cursor.execute("""
     INSERT INTO registro 
-    (accion)
-    VALUES (?)
+    (tarea,accion,fecha)
+    VALUES (?,?,?)
     """, (
-        (accion,)
+        (tarea_tegistro,accion,fecha)
     ))
     conexion.commit()
     conexion.close()
@@ -190,7 +210,7 @@ def cargar_historial():
     cursor = conexion.cursor()
 
     cursor.execute("""
-    SELECT id, accion
+    SELECT id, tarea, accion, fecha
         from historial
     """)
 
@@ -210,7 +230,7 @@ def cargar_registros():
     cursor = conexion.cursor()
 
     cursor.execute("""
-    SELECT id, accion
+    SELECT id, tarea, accion, fecha
         from registro
     """)
 
@@ -242,6 +262,9 @@ def estado_tarea(estado,racha,tarea):
         conexion.commit()
         conexion.close()
 
+        accion = "Se completo la Tarea Unica"
+        guardar_registros(tarea,estado,accion)
+
     else:
         id_tarea = tarea.id
 
@@ -255,12 +278,20 @@ def estado_tarea(estado,racha,tarea):
         conexion.commit()
         conexion.close()
 
+        if "Habito completado" in estado:
+            accion = f"Se completo la Tarea Rutina, Racha: {racha}"
+        elif "Fallida" in estado:
+            accion = f"Se fallo la Tarea Rutina"
+
+        guardar_registros(tarea,estado,accion)
+
+
 def eliminar_tarea_sql(tarea):
     conexion = sqlite3.connect("data/gestor.db")
     cursor = conexion.cursor()
 
     if tarea.tipo == "Unica":
-
+        t = "Tarea Unica"
         cursor.execute("""
         DELETE FROM tareas
         WHERE id = ?
@@ -270,6 +301,7 @@ def eliminar_tarea_sql(tarea):
         conexion.close()
     
     else:
+        t = "Tarea Rutina"
         cursor.execute("""
         DELETE FROM rutinas
         WHERE id = ?
@@ -277,4 +309,7 @@ def eliminar_tarea_sql(tarea):
 
         conexion.commit()
         conexion.close()
+
+        accion = f"Se elimino la {t}"
+        guardar_historial(tarea,accion)
 

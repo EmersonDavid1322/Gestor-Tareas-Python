@@ -2,7 +2,7 @@ from datetime import datetime
 import tkinter.messagebox as messagebox
 from clases import TareaRutina,Tarea
 from storage import guardar_datos,cargar_datos
-from base_sql import guardar_tareas,guardar_historial,guardar_registros, cargar_tareas,estado_tarea,eliminar_tarea_sql
+from base_sql import guardar_tareas, cargar_tareas,estado_tarea,eliminar_tarea_sql
 
 print("Versión 1.3 servicios")
 
@@ -62,13 +62,11 @@ def agregar_tarea(tipo,nombre,prioridad,tiempo,dias):
             if tarea_datos.tipo == "Rutina":
                 tareas_rutina.append(tarea_datos)
                 guardar_tareas(tarea_datos.tipo,tarea_datos)
-                guardar_historial("Se añadió la tarea rutinaria: " + tarea_datos.nombre)
                 messagebox.showinfo("Añadir Tareas",f"Tarea rutina agregada {tarea_datos.nombre} correctamente")
                 return
             else:
                 tareas.append(tarea_datos)
                 guardar_tareas(tarea_datos.tipo,tarea_datos)
-                guardar_historial("Se añadió la tarea unica: " + tarea_datos.nombre)
                 messagebox.showinfo("Añadir Tareas",f"Tarea agregada {tarea_datos.nombre} correctamente")
                 return
         else:
@@ -77,7 +75,6 @@ def agregar_tarea(tipo,nombre,prioridad,tiempo,dias):
                 if respuesta:
                     tareas_rutina.append(tarea_datos)
                     guardar_tareas(tarea_datos.tipo,tarea_datos)
-                    guardar_historial("Se añadió tarea rutina duplicada: " + tarea_datos.nombre)
                     messagebox.showinfo("Añadir Tareas",f"Tarea agregada {tarea_datos.nombre} correctamente")
                 return
             else:
@@ -85,7 +82,6 @@ def agregar_tarea(tipo,nombre,prioridad,tiempo,dias):
                 if respuesta:
                     tareas.append(tarea_datos)
                     guardar_tareas(tarea_datos.tipo,tarea_datos)
-                    guardar_historial("Se añadió tarea duplicada: " + tarea_datos.nombre)
                     messagebox.showinfo("Añadir Tareas",f"Tarea agregada {tarea_datos.nombre} correctamente")
                 return
 
@@ -102,7 +98,6 @@ def completar(id,tipo):
                 estado = "Completada"
                 racha = None
                 messagebox.showinfo("Completar","¡Felicidades! Has completado la tarea, sigue asi")
-                guardar_historial("Tarea completada: " + marcar_tarea.nombre)
                 if marcar_tarea.prioridad == "Alta":
                     puntaje = 15
                     puntos_v += puntaje
@@ -138,10 +133,6 @@ def completar(id,tipo):
                 messagebox.showinfo("Completar","¡Felicidades! Has completado tu habito, sigue asi")
                 messagebox.showinfo("Completar",f"¡Felicidades! Tu puntaje de diciplina subio a: {puntaje} sigue asi")
                 felicitar_racha(marcar_tarea,marcar_tarea.racha)
-                guardar_registros(f"Nombre: {marcar_tarea.nombre} ,Estado: {marcar_tarea.estado}, Prioridad: {marcar_tarea.prioridad}, racha: {marcar_tarea.racha}")
-                guardar_historial(
-                    f"Habito de {marcar_tarea.nombre} completo racha de {marcar_tarea.racha}"
-                )
                 guardar_datos(puntos_v,webhook,lista_frases,usar_frase,token,canal)
 
 def fallar_tarea(id,tipo):
@@ -158,8 +149,6 @@ def fallar_tarea(id,tipo):
     estado = f"Fallida {fecha_m}"
     estado_tarea(estado,racha,tarea_f)
     messagebox.showinfo("Fallar","Lo importante no es cuantas veces caes, sino la fuerza que te hace volver a levantarte")
-    guardar_historial(f"Se a fallado la tarea '{tarea_f.nombre}' el '{fecha_m}'")
-    guardar_registros(f"Nombre: {tarea_f.nombre} ,Estado: {tarea_f.estado}, Prioridad: {tarea_f.prioridad}, racha: {tarea_f.racha}")
     return
 
 def eliminar_tarea(id_tarea,r,msg,tipo):
@@ -175,10 +164,8 @@ def eliminar_tarea(id_tarea,r,msg,tipo):
         if confirmacion:
             if r:
                 eliminar_tarea_sql(tarea_eliminar)
-                guardar_historial(f"Se eliminio el habito '{tarea_eliminar.nombre}'")
             else:
                 eliminar_tarea_sql(tarea_eliminar)
-                guardar_historial(f"Se eliminio la tarea '{tarea_eliminar.nombre}'")
 
 def mostrar_info_tarea(id, r,tipo):
         tareas, tareas_rutina = cargar_tareas()

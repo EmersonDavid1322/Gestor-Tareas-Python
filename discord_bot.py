@@ -3,7 +3,7 @@ from discord.ext import commands
 from datetime import datetime
 import random
 from babel.dates import get_day_names
-from storage import guardar_datos, cargar_datos
+from storage import cargar_datos
 from base_sql import cargar_tareas,cargar_registros,guardar_historial,guardar_registros,estado_tarea
 
 puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
@@ -96,13 +96,14 @@ async def hecho(ctx, numero: int):
 
         estado = f"Habito completado el {fecha_m}"
         racha =tarea.racha + 1
-        guardar_registros(f"Nombre: {tarea.nombre} ,Estado: {tarea.estado}, Prioridad: {tarea.prioridad}, racha: {tarea.racha}")
-        guardar_historial(f"Habito de {tarea.nombre} completo \n racha de dias {tarea.racha}")
-
         estado_tarea(estado,racha,tarea)
+
+        accion = "Se completo la Tarea Rutina"
+        guardar_registros(tarea,estado,accion)
+
         await ctx.send(f"⭐ ¡Muy bien! Has completado: **{tarea.nombre}**")
         racha_visual = "🔥" * tarea.racha
-        await ctx.send(f"Tu racha actual es: ({tarea.racha} {racha_visual})")
+        await ctx.send(f"Tu racha actual es: ({racha} {racha_visual})")
         
     except IndexError:
         await ctx.send("Ese número de tarea no existe \n Revisa la lista con `!tareas`.")
@@ -122,6 +123,9 @@ async def fallo(ctx, numero: int):
         racha = 0
         estado = f"Fallida {fecha_m}"
         estado_tarea(estado,racha,tarea)
+
+        accion = "Se Fallo la Tarea Rutina"
+        guardar_registros(tarea,estado,accion)
 
     except IndexError:
         await ctx.send("Ese número de tarea no existe \n Revisa la lista con `!tareas`.")
@@ -200,7 +204,7 @@ async def ayuda(ctx):
     embed.add_field(name="`!tareas [Tipo]`", value="Lista todos tus hábitos y su estado actual, para tus tareas de hoy utiliza 'hoy' y para ver todas tus tareas utiliza 'todas'", inline=False)
     embed.add_field(name="`!hecho [número]`", value="Marca el hábito como completado hoy y sube tu racha. 🔥", inline=False)
     embed.add_field(name="`!fallo [número]`", value="Marca el hábito como fallido reiniciando la racha y su estado.", inline=False)
-    embed.add_field(name="`!registro`", value="Muestra el registro de habitos cuomplidos y fallidos.", inline=False)
+    embed.add_field(name="`!registro`", value="Muestra el registro de habitos cumplidos y fallidos.", inline=False)
     embed.add_field(name="`!estadisticas`", value="Muesta las estadisticas de tus tareas y rutinas, argumentos disponibles 'tarea' y 'rutina'.", inline=False)
     embed.add_field(name="`!racha`", value="Muesta tu mejor racha actualmente junto con la cantidad de días.", inline=False)
     embed.add_field(name="`!frase`", value="Muesta frases aletorias que hayas añadido en la lista de frases.", inline=False)
