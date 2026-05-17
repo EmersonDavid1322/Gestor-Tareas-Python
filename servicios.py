@@ -132,7 +132,7 @@ def completar(id,tipo):
                 estado_tarea(estado,racha,marcar_tarea)
                 messagebox.showinfo("Completar","¡Felicidades! Has completado tu habito, sigue asi")
                 messagebox.showinfo("Completar",f"¡Felicidades! Tu puntaje de diciplina subio a: {puntaje} sigue asi")
-                felicitar_racha(marcar_tarea,marcar_tarea.racha)
+                felicitar_racha(marcar_tarea,racha)
                 guardar_datos(puntos_v,webhook,lista_frases,usar_frase,token,canal)
 
 def fallar_tarea(id,tipo):

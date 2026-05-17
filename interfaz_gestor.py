@@ -1,6 +1,6 @@
 import customtkinter as ctk
 import tkinter.messagebox as messagebox
-from base_sql import cargar_tareas
+from base_sql import cargar_tareas, limpiar_tareas
 from servicios import agregar_tarea, completar, fallar_tarea, eliminar_tarea, mostrar_info_tarea
 
 print("Version 1.3 Interfaz")
@@ -133,6 +133,10 @@ class VentanaTareas(ctk.CTkToplevel):
         
         self.entrada_busqueda.bind("<KeyRelease>", self.al_escribir)
 
+        self.btn_limpiar = ctk.CTkButton(self, text="Limpiar", width=30, fg_color="#2C2697",
+                                            command= lambda: self.actualizar_limpieza())
+        self.btn_limpiar.pack(pady=10)
+
         self.scroll_tareas = ctk.CTkScrollableFrame(self, label_text="Lista de Actividades")
         self.scroll_tareas.pack(padx=20, pady=20, fill="both", expand=True)
 
@@ -197,6 +201,10 @@ class VentanaTareas(ctk.CTkToplevel):
             boton_info = ctk.CTkButton(fila, text="!",width=30,fg_color="#29A55B",
                                         command=lambda id_tarea=tarea.id, r=es_rutina, tipo=tarea.tipo: mostrar_info_tarea(id_tarea,r,tipo))
             boton_info.pack(side="right", padx=10)
+
+    def actualizar_limpieza(self):
+        limpiar_tareas()
+        self.mostrar_tareas()
 
     def actualizar_fallar(self,id_tarea,tipo):
         fallar_tarea(id_tarea,tipo)

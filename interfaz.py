@@ -3,7 +3,7 @@ from storage import crear_archivos,cargar_datos
 from base_sql import cargar_historial,cargar_registros,cargar_tareas
 from config import VentanaConfiguraciones
 from interfaz_gestor import ventanaGestionarTareas
-from base_sql import crear_tablas
+from base_sql import crear_tablas, resturar_tarea
 
 crear_tablas()
 crear_archivos()
@@ -80,6 +80,12 @@ class VentanaHistorial(ctk.CTkToplevel):
             # El mensaje del historial
             lbl_texto = ctk.CTkLabel(fila, text=entrada, font=("Roboto", 12))
             lbl_texto.pack(side="left", padx=5)
+
+            if "Se elimino" in entrada:
+                id = entrada[0]
+                btn_rest = ctk.CTkButton(fila, text="Restaurar", width=30, fg_color="#2536bb",
+                                            command=lambda: resturar_tarea(id))
+                btn_rest.pack(side="right", padx=10)
             
             # Una línea sutil de separación
             separador = ctk.CTkFrame(self.scroll_historial, height=1, fg_color="#34495e")

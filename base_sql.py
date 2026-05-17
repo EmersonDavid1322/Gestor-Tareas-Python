@@ -3,6 +3,7 @@ import os
 import json
 import sys
 from datetime import datetime
+import tkinter.messagebox as messagebox
 from clases import Tarea,TareaRutina
 
 if getattr(sys, 'frozen', False):
@@ -54,9 +55,25 @@ def crear_tablas():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         tarea TEXT NOTT NULL,
         accion TEXT NOT NULL,
-        fecha TEXTO NOT NULL 
+        fecha TEXT NOT NULL 
     )
     """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS papelera (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        creacion TEXT NOT NULL,
+        nombre TEXT NOT NULL,
+        estado TEXT DEFAULT 'pendiente',
+        hora TEXT,
+        prioridad TEXT NOT NULL,
+        tipo TEXT NOT NULL,
+        racha INTEGER,
+        dias TEXT,
+        accion TEXT NOT NULL
+    )
+    """)
+
     conexion.commit()
     conexion.close()
 
@@ -137,6 +154,47 @@ def guardar_historial(tarea,accion):
     conexion.commit()
     conexion.close()
 
+def guardar_papelera(tarea):
+    conexion = sqlite3.connect("data/historial.db")
+    cursor = conexion.cursor()
+
+    accion_r = "Se elimino"
+
+    if tarea.tipo == "Rutina":
+        cursor.execute("""
+        INSERT INTO papelera
+        (creacion, nombre, estado, hora, prioridad, tipo, racha, dias, accion)  
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+            (
+            tarea.creacion,
+            tarea.nombre,
+            tarea.estado,
+            tarea.hora,
+            tarea.prioridad,
+            tarea.tipo,
+            tarea.racha,
+            json.dumps(tarea.dias,ensure_ascii=False),
+            accion_r
+        ))
+    
+    else:
+        cursor.execute("""
+        INSERT INTO papelera
+        (creacion, nombre, estado, hora, prioridad, tipo, accion)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            tarea.creacion,
+            tarea.nombre,
+            tarea.estado,
+            tarea.hora,
+            tarea.prioridad,
+            tarea.tipo,
+            accion_r
+        ))
+    conexion.commit()
+    conexion.close()
+
 def guardar_registros(tarea,estado,accion):
     fecha = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
     tarea_tegistro = f"| {tarea.creacion} | {tarea.nombre} | {tarea.tipo} | {estado} | {tarea.hora} | {tarea.prioridad} |"
@@ -210,17 +268,28 @@ def cargar_historial():
     cursor = conexion.cursor()
 
     cursor.execute("""
-    SELECT id, tarea, accion, fecha
+    SELECT tarea, accion, fecha
         from historial
     """)
 
     filas_historial = cursor.fetchall()
+
+
+    cursor.execute("""
+    SELECT id, creacion, nombre, estado, tipo, accion
+        from papelera
+    """)
+
+    filas_papelera = cursor.fetchall()
 
     historial = []
 
     for fila in filas_historial:
         historial.append(fila)
     
+    for fila in filas_papelera:
+        historial.append(fila)
+
     conexion.close()
 
     return historial
@@ -291,7 +360,6 @@ def eliminar_tarea_sql(tarea):
     cursor = conexion.cursor()
 
     if tarea.tipo == "Unica":
-        t = "Tarea Unica"
         cursor.execute("""
         DELETE FROM tareas
         WHERE id = ?
@@ -299,9 +367,10 @@ def eliminar_tarea_sql(tarea):
 
         conexion.commit()
         conexion.close()
+
+        guardar_papelera(tarea)
     
     else:
-        t = "Tarea Rutina"
         cursor.execute("""
         DELETE FROM rutinas
         WHERE id = ?
@@ -310,6 +379,66 @@ def eliminar_tarea_sql(tarea):
         conexion.commit()
         conexion.close()
 
-        accion = f"Se elimino la {t}"
-        guardar_historial(tarea,accion)
+        guardar_papelera(tarea)
 
+def resturar_tarea(id_r):
+    conexion = sqlite3.connect("data/historial.db")
+    cursor = conexion.cursor()
+
+    cursor.execute("SELECT * FROM papelera WHERE id = ?", (id_r,))
+
+    tarea = cursor.fetchone()
+
+    conexion.close()
+
+    tipo = tarea[6]
+
+    if tipo == "Rutina":
+        restauar = TareaRutina(
+            id=tarea[0],
+            creacion=tarea[1],
+            nombre=tarea[2],
+            estado=tarea[3],
+            hora=tarea[4],
+            prioridad=tarea[5],
+            tipo=tarea[6],
+            racha=tarea[7],
+            dias=tarea[8]
+        )
+
+    else:
+        restauar = Tarea(
+            id=tarea[0],
+            creacion=tarea[1],
+            nombre=tarea[2],
+            estado=tarea[3],
+            hora=tarea[4],
+            prioridad=tarea[5],
+            tipo=tarea[6]
+        )
+
+    guardar_tareas(tipo=tipo,tarea=restauar)
+
+    conexion = sqlite3.connect("data/historial.db")
+    cursor = conexion.cursor()
+    print(id_r)
+    cursor.execute("""
+        DELETE FROM papelera
+        WHERE id = ?
+        """, (id_r,))
+
+    conexion.commit()
+    conexion.close()
+
+    messagebox.showinfo("Restaurar","Se a restaurado correctamente la tarrea")
+
+    return
+
+def limpiar_tareas():
+    conexion = sqlite3.connect("data/gestor.db")
+    cursor = conexion.cursor()
+
+    cursor.execute("DELETE FROM tareas WHERE estado = ?", ('Completada',))
+
+    conexion.commit()
+    conexion.close()
