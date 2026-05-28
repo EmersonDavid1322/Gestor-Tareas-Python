@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PATH="$HOME/.local/bin:$PATH"
+
 # 1. Ruta base del proyecto
 BASE_DIR=$(dirname "$(readlink -f "$0")")
 

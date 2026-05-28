@@ -107,12 +107,11 @@ def enviar_notificacion_diaria():
     
     if todos:
         if faltantes:
-            if hora == "21:00":
-                print("aqui")
+            if hora == "20:00":
                 print(f"Enviando Notificación diaria {hora}")
                 notificacion_tareas("Evaluacion Diaria", "¿Ya registraste tus habitos y tareas? ¡Aun estas a tiempo!")
         else:
-            if hora == "21:00":
+            if hora == "20:00":
                 notificacion_tareas("Evaluacion Diaria", "Felicidades hoy hiciste un buen trabajo")
 
 def daemon_notificaciones():
@@ -122,7 +121,7 @@ def daemon_notificaciones():
     while True:
         enviar_notificacion_diaria()
         enviar_notificacion()
-        time.sleep(15)
+        time.sleep(60)
 
 if __name__ == "__main__":
     daemon_notificaciones()
