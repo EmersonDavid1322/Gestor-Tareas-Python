@@ -53,7 +53,7 @@ def crear_tablas():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS historial (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        tarea TEXT NOTT NULL,
+        tarea TEXT NOT NULL,
         accion TEXT NOT NULL,
         fecha TEXT NOT NULL 
     )
