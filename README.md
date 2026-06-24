@@ -69,7 +69,7 @@ gestor-disciplina/
 ## Instalación
 
 ```bash
-git clone https://github.com/tu-usuario/gestor-disciplina
+git clone https://github.com/EmersonDavid1322/Gestor-Tareas-Python
 cd gestor-disciplina
 bash installer.sh
 ```
