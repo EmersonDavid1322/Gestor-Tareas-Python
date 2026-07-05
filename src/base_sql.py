@@ -4,7 +4,7 @@ import json
 import sys
 from datetime import datetime
 import tkinter.messagebox as messagebox
-from clases import Tarea,TareaRutina
+from src.clases import Tarea,TareaRutina
 
 if getattr(sys, 'frozen', False):
     ruta_base = os.path.dirname(sys.executable)

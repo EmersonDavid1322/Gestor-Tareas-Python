@@ -1,9 +1,9 @@
 #!/bin/bash
-
+set -e
 export PATH="$HOME/.local/bin:$PATH"
 
 # 1. Ruta base del proyecto
-BASE_DIR=$(dirname "$(readlink -f "$0")")
+BASE_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 
 # 2. Carpeta destino
 DESTINO_APP="$HOME/apps/gestor"
@@ -11,7 +11,7 @@ DESTINO_APP="$HOME/apps/gestor"
 rm  -f "$DESTINO_APP/bot_disciplina"
 rm  -f "$DESTINO_APP/GestorDisciplina"
 rm  -f "$DESTINO_APP/notificador"
-rm  -rf "$DESTINO_APP/noti"
+rm  -rf "$DESTINO_APP/assets"
 echo "Elimanada la verison antigua"
 
 mkdir -p "$DESTINO_APP"
@@ -28,15 +28,24 @@ rm -f "$BASE_DIR"/*.spec
 
 # 4. Compilar ejecutables
 echo "⚙️ Compilando bot..."
-pyinstaller --noconfirm --onefile "$BASE_DIR/discord_bot.py" --name bot_disciplina
+pyinstaller --noconfirm --onefile \
+    --paths "$BASE_DIR/src" \
+    "$BASE_DIR/discord_bot.py" \
+    --name bot_disciplina
 
 echo "⚙️ Compilando notificador..."
-pyinstaller --onefile notificaciones.py \
+pyinstaller --onefile \
+    --paths "$BASE_DIR/src" \
+    "$BASE_DIR/notificaciones.py" \
     --name notificador \
     --collect-all plyer
 
 echo "⚙️ Compilando interfaz..."
-pyinstaller --noconfirm --onefile --windowed "$BASE_DIR/interfaz.py" --name GestorDisciplina
+pyinstaller --noconfirm --onefile --windowed \
+    --paths "$BASE_DIR/src" \
+    "$BASE_DIR/interfaz.py" \
+    --name GestorDisciplina
+
 
 # 5. Copiar ejecutables
 echo "📦 Copiando ejecutables..."
@@ -47,19 +56,12 @@ cp "$BASE_DIR/dist/GestorDisciplina" "$DESTINO_APP/"
 # 6. Dar permisos
 chmod +x "$DESTINO_APP/"*
 
-# 7. Copiar recursos (sonidos)
-if [ -d "$BASE_DIR/noti" ]; then
-    cp -r "$BASE_DIR/noti" "$DESTINO_APP/"
-    echo "📂 Carpeta de sonidos copiada"
+# 7. Copiar recursos
+if [ -d "$BASE_DIR/assets" ]; then
+    cp -r "$BASE_DIR/assets" "$DESTINO_APP/"
+    echo "📂 Carpeta de recursos copiada"
 else
-    echo "⚠️ No se encontró la carpeta 'noti'"
-fi
-
-if [ -f "$BASE_DIR/icono.png" ]; then
-    cp "$BASE_DIR/icono.png" "$DESTINO_APP/"
-    echo "Icono copiado"
-else
-    echo "⚠️ No se encontró el icono"
+    echo "⚠️ No se encontró la carpeta de recursos"
 fi
 
 echo "🧹 Limpieza final..."
@@ -70,4 +72,4 @@ rm -f "$BASE_DIR"/*.spec
 echo "✅ ¡Todo listo! Ejecuta:"
 echo "$DESTINO_APP/GestorDisciplina"
 
-bash "$BASE_DIR/systemd.sh"
+bash "$BASE_DIR/scripts/systemd.sh"

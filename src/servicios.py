@@ -1,8 +1,8 @@
 from datetime import datetime
 import tkinter.messagebox as messagebox
-from clases import TareaRutina,Tarea
-from storage import guardar_datos,cargar_datos
-from base_sql import guardar_tareas, cargar_tareas,estado_tarea,eliminar_tarea_sql
+from src.clases import TareaRutina,Tarea
+from src.storage import guardar_datos,cargar_datos
+from src.base_sql import guardar_tareas, cargar_tareas,estado_tarea,eliminar_tarea_sql
 
 print("Versión 1.3 servicios")
 

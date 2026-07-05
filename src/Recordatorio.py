@@ -1,6 +1,6 @@
 import requests
-from storage import cargar_datos
-from base_sql import cargar_tareas
+from src.storage import cargar_datos
+from src.base_sql import cargar_tareas
 import os
 from datetime import datetime
 import random   

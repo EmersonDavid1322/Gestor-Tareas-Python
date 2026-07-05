@@ -1,11 +1,41 @@
 #!/bin/bash
-
+set -e 
 APP_DIR="$HOME/apps/gestor"
 SYSTEMD_DIR="/etc/systemd/system"
 CURRENT_USER=$(whoami)
 
 USER_SYSTEMD_DIR="$HOME/.config/systemd/user"
 mkdir -p "$USER_SYSTEMD_DIR"
+
+
+#limpiando anteirores servicios
+if [ -f "$HOME/.config/systemd/user/notificador.service" ]; then
+    sudo systemctl --use stop notificador.service|| true
+    systemctl --user disable notificador.service|| true
+
+    rm -f "$HOME/.config/systemd/user/notificador.service"
+
+    systemctl --user reset-failed notificador.service || true
+
+    systemctl --user daemon-reload
+    echo "Se limpio el servicio notificador anterior"
+fi
+
+# Limpiando anteriores servicios bot_disciplina.service
+if [ -f "/etc/systemd/system/bot_disciplina.service" ]; then
+    
+    sudo systemctl stop bot_disciplina.service|| true
+    sudo systemctl disable bot_disciplina.service || true
+    
+    sudo rm -f "/etc/systemd/system/bot_disciplina.service"
+    
+    sudo systemctl reset-failed bot_disciplina.service || true
+    
+    sudo systemctl daemon-reload
+    echo "Se limpio el servicio bot discord anterior"
+fi
+
+
 
 echo "🔧 Configurando servicios systemd..."
 
@@ -74,10 +104,6 @@ systemctl --user start notificador
 
 sudo systemctl restart bot_disciplina.service
 systemctl --user restart notificador
-
-DESTINO_APP="$HOME/apps/gestor"
-sudo chcon -t bin_t "$DESTINO_APP/bot_disciplina"
-sudo chcon -t bin_t "$DESTINO_APP/notificador"
 
 echo ""
 echo "📊 Estado BOT:"

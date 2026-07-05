@@ -1,5 +1,5 @@
 import requests
-from storage import guardar_datos, cargar_datos
+from src.storage import guardar_datos, cargar_datos
 import customtkinter as ctk
 import tkinter.messagebox as messagebox
 puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()

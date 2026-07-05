@@ -1,9 +1,9 @@
 import customtkinter as ctk
-from storage import crear_archivos,cargar_datos
-from base_sql import cargar_historial,cargar_registros,cargar_tareas
-from config import VentanaConfiguraciones
-from interfaz_gestor import ventanaGestionarTareas
-from base_sql import crear_tablas, resturar_tarea
+from src.storage import crear_archivos,cargar_datos
+from src.base_sql import cargar_historial,cargar_registros,cargar_tareas
+from src.config import VentanaConfiguraciones
+from src.interfaz_gestor import ventanaGestionarTareas
+from src.base_sql import crear_tablas, resturar_tarea
 
 crear_tablas()
 crear_archivos()

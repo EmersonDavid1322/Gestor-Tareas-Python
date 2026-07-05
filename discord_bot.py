@@ -3,8 +3,8 @@ from discord.ext import commands
 from datetime import datetime
 import random
 from babel.dates import get_day_names
-from storage import cargar_datos
-from base_sql import cargar_tareas,cargar_registros,guardar_historial,guardar_registros,estado_tarea
+from src.storage import cargar_datos
+from src.base_sql import cargar_tareas,cargar_registros,guardar_historial,guardar_registros,estado_tarea
 
 puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 

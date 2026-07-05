@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import tkinter.messagebox as messagebox
-from base_sql import cargar_tareas, limpiar_tareas
-from servicios import agregar_tarea, completar, fallar_tarea, eliminar_tarea, mostrar_info_tarea
+from src.base_sql import cargar_tareas, limpiar_tareas
+from src.servicios import agregar_tarea, completar, fallar_tarea, eliminar_tarea, mostrar_info_tarea
 
 print("Version 1.3 Interfaz")
 

@@ -5,8 +5,8 @@ from datetime import datetime
 from babel.dates import get_day_names
 import random
 import time
-from base_sql import cargar_tareas
-from storage import cargar_datos
+from src.base_sql import cargar_tareas
+from src.storage import cargar_datos
 
 RUTA_MEMORIA_NOTI = "/tmp/ultima_noti_disciplina.txt"
 
@@ -16,8 +16,10 @@ if getattr(sys, 'frozen', False):
 else:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-RUTA_SONIDO = os.path.join(BASE_DIR, "noti", "dota2-notification.mp3")
-RUTA_ICONO = os.path.join(BASE_DIR,"icono.png")
+RUTA_ASSETS = os.path.join(BASE_DIR, "assets")
+
+RUTA_SONIDO = os.path.join(RUTA_ASSETS, "dota2-notification.mp3")
+RUTA_ICONO = os.path.join(RUTA_ASSETS, "icono.png")
 
 def notificacion_tareas(titulo, mensaje):
     print("Reproduciendo sonido:", RUTA_SONIDO)
