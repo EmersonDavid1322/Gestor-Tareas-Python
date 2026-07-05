@@ -12,6 +12,7 @@ else:
     ruta_base = os.path.dirname(os.path.abspath(__file__))
 
 CARPETA_DATA = os.path.join(ruta_base, "data")
+DATA_SQL = os.path.join(CARPETA_DATA, "gestor.db" )
 os.makedirs(CARPETA_DATA, exist_ok=True)
 
 def crear_tablas():
@@ -314,7 +315,7 @@ def cargar_registros():
 
     return registros
 
-def estado_tarea(estado,racha,tarea):
+def estado_tarea(tarea):
     conexion = sqlite3.connect("data/gestor.db")
     cursor = conexion.cursor()
 
@@ -326,13 +327,13 @@ def estado_tarea(estado,racha,tarea):
         UPDATE tareas
         SET estado = ?
         WHERE id = ?
-        """, (estado, id_tarea))
+        """, (tarea.estado, id_tarea))
 
         conexion.commit()
         conexion.close()
 
         accion = "Se completo la Tarea Unica"
-        guardar_registros(tarea,estado,accion)
+        guardar_registros(tarea,tarea.estado,accion)
 
     else:
         id_tarea = tarea.id
@@ -342,17 +343,17 @@ def estado_tarea(estado,racha,tarea):
             SET estado = ?,
                 racha = ?
             WHERE id = ?
-            """, (estado, racha, id_tarea))
+            """, (tarea.estado, tarea.racha, id_tarea))
 
         conexion.commit()
         conexion.close()
 
-        if "Habito completado" in estado:
-            accion = f"Se completo la Tarea Rutina, Racha: {racha}"
-        elif "Fallida" in estado:
+        if "Habito completado" in tarea.estado:
+            accion = f"Se completo la Tarea Rutina, Racha: {tarea.racha}"
+        elif "Fallida" in tarea.estado:
             accion = f"Se fallo la Tarea Rutina"
 
-        guardar_registros(tarea,estado,accion)
+        guardar_registros(tarea,tarea.estado,accion)
 
 
 def eliminar_tarea_sql(tarea):

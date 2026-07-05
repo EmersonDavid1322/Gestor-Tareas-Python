@@ -172,7 +172,7 @@ class VentanaTareas(ctk.CTkToplevel):
             fila.pack(fill="x", pady=5, padx=5)
 
             #informacion de la tarea
-            info_ta = f"| {tarea.nombre} | {tarea.prioridad} | {tarea.estado} | {tarea.hora} |".title()
+            info_ta = tarea
             info_lbl = ctk.CTkLabel(fila, text=info_ta, font=("Roboto", 12))
             info_lbl.pack(side="left", padx=15, pady=10)
 

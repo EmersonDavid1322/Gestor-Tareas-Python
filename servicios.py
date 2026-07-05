@@ -91,49 +91,22 @@ def completar(id,tipo):
 
         marcar_tarea = validar_tarea_id(id,tipo,tareas,tareas_rutina)
 
-        if marcar_tarea.tipo == "Unica":
-            if marcar_tarea.estado == "Completada":
-                messagebox.showwarning("Completar",f"La tarea {marcar_tarea.nombre} ya a sido marcada")
-            else:
-                estado = "Completada"
-                racha = None
-                messagebox.showinfo("Completar","¡Felicidades! Has completado la tarea, sigue asi")
-                if marcar_tarea.prioridad == "Alta":
-                    puntaje = 15
-                    puntos_v += puntaje
-                elif marcar_tarea.prioridad == "Media":
-                    puntaje = 10
-                    puntos_v += puntaje
-                else:
-                    puntaje = 5
-                    puntos_v += puntaje
-                messagebox.showinfo("Completar",f"¡Felicidades! Tu puntaje de diciplina subio a: {puntaje} sigue asi")
-                estado_tarea(estado,racha,marcar_tarea)
-                guardar_datos(puntos_v,webhook,lista_frases,usar_frase,token,canal)
+        completado, puntaje = marcar_tarea.completar()
+        
+        if completado:
+            puntos_v += puntaje
+
+            estado_tarea(marcar_tarea)
+            messagebox.showinfo("Completar","¡Felicidades! Has completado una tarea, sigue asi")
+            messagebox.showinfo("Completar",f"¡Felicidades! Tu puntaje de diciplina subio con: {puntaje} sigue asi")
+            
+            mensaje = marcar_tarea.mensaje_extra()
+            if mensaje is not None:
+                messagebox.showinfo("Racha", mensaje)
+
+            guardar_datos(puntos_v,webhook,lista_frases,usar_frase,token,canal)
         else:
-            fecha_m = datetime.now().strftime("%d/%m/%Y")
-
-            if f"Habito completado el {str(fecha_m)}" in marcar_tarea.estado: #Usamor estado completo porque corroboramos fecha tambien al fallar
-                messagebox.showwarning("Completar","Tarea ya marcada por hoy")
-
-            else:
-
-                estado = f"Habito completado el {fecha_m}"
-                racha = marcar_tarea.racha + 1
-                if marcar_tarea.prioridad == "Alta":
-                    puntaje = 15
-                    puntos_v += puntaje
-                elif marcar_tarea.prioridad == "Media":
-                    puntaje = 10
-                    puntos_v += puntaje
-                else:
-                    puntaje = 5
-                    puntos_v += puntaje
-                estado_tarea(estado,racha,marcar_tarea)
-                messagebox.showinfo("Completar","¡Felicidades! Has completado tu habito, sigue asi")
-                messagebox.showinfo("Completar",f"¡Felicidades! Tu puntaje de diciplina subio a: {puntaje} sigue asi")
-                felicitar_racha(marcar_tarea,racha)
-                guardar_datos(puntos_v,webhook,lista_frases,usar_frase,token,canal)
+            messagebox.showwarning("Completar","Tarea ya marcada")
 
 def fallar_tarea(id,tipo):
     fecha_m = datetime.now().strftime("%d/%m/%Y")
@@ -141,15 +114,14 @@ def fallar_tarea(id,tipo):
 
     tarea_f = validar_tarea_id(id,tipo,tareas,tareas_rutina)
 
-    if tarea_f.estado == "Pendiente" or "Fallida" in tarea_f.estado:
+    fallar = tarea_f.fallar()
+
+    if fallar:
+        estado_tarea(tarea_f)
+        messagebox.showinfo("Fallar","Lo importante no es cuantas veces caes, sino la fuerza que te hace volver a levantarte")
+    else:
         messagebox.showerror("Fallar","Esta tarea no se a completado o ya ha sido marcada como fallida")
-        return
-    
-    racha = 0
-    estado = f"Fallida {fecha_m}"
-    estado_tarea(estado,racha,tarea_f)
-    messagebox.showinfo("Fallar","Lo importante no es cuantas veces caes, sino la fuerza que te hace volver a levantarte")
-    return
+
 
 def eliminar_tarea(id_tarea,r,msg,tipo):
         tareas, tareas_rutina = cargar_tareas()
