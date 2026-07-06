@@ -19,12 +19,6 @@ def validar_tarea_nombre(nombre,tareas,tareas_rutina):
         if t.nombre == nombre:
             return t
 
-def generar_id(tareas, tareas_rutina):
-    todos = tareas + tareas_rutina
-    if not todos:
-        return 1
-    return max(t.id for t in todos) + 1
-
 def agregar_tarea(tipo,nombre,prioridad,tiempo,dias): 
         tareas, tareas_rutina = cargar_tareas()
         id_tarea = 0
@@ -109,7 +103,6 @@ def completar(id,tipo):
             messagebox.showwarning("Completar","Tarea ya marcada")
 
 def fallar_tarea(id,tipo):
-    fecha_m = datetime.now().strftime("%d/%m/%Y")
     tareas, tareas_rutina = cargar_tareas()
 
     tarea_f = validar_tarea_id(id,tipo,tareas,tareas_rutina)

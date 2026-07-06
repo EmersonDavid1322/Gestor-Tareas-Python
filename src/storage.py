@@ -7,10 +7,9 @@ if getattr(sys, 'frozen', False):
 else:
     ruta_base = os.path.dirname(os.path.abspath(__file__))
 
-CARPETA_DATA = os.path.join(ruta_base, "data")
+CARPETA_DATA = os.path.join(os.path.dirname(ruta_base), "data")
 os.makedirs(CARPETA_DATA, exist_ok=True)
 
-# Definimos las rutas de todos tus archivos usando la base
 RUTA_FRASES = os.path.join(CARPETA_DATA, "frases.json")
 RUTA_PUNTOS = os.path.join(CARPETA_DATA, "puntaje.json")
 RUTA_CONFIG = os.path.join(CARPETA_DATA, "config.json")
