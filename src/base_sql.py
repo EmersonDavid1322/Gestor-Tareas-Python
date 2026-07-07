@@ -8,12 +8,12 @@ from src.clases import Tarea,TareaRutina
 
 if getattr(sys, 'frozen', False):
     ruta_base = os.path.dirname(sys.executable)
+    CARPETA_DATA = os.path.join(ruta_base, "data")
 else:
     ruta_base = os.path.dirname(os.path.abspath(__file__))
+    CARPETA_DATA = os.path.join(os.path.dirname(ruta_base), "data")
 
-CARPETA_DATA = os.path.join(ruta_base, "data")
 DATA_SQL = os.path.join(CARPETA_DATA, "gestor.db" )
-os.makedirs(CARPETA_DATA, exist_ok=True)
 
 def crear_tablas():
     conexion = sqlite3.connect("data/gestor.db")

@@ -1,9 +1,8 @@
 import customtkinter as ctk
 import tkinter.messagebox as messagebox
-from src.base_sql import cargar_tareas, limpiar_tareas
-from src.servicios import agregar_tarea, completar, fallar_tarea, eliminar_tarea, mostrar_info_tarea
-
-print("Version 1.3 Interfaz")
+from src.base_sql import limpiar_tareas
+from src.servicios import agregar_tarea, completar, fallar_tarea, eliminar_tarea, mostrar_info_tarea, filtro_todas, filtro_hoy, filtro_pendientes_hoy
+print("Version 1.5 Interfaz")
 
 class ventanaGestionarTareas(ctk.CTkToplevel):
     def __init__(self,menu_principal):
@@ -21,7 +20,7 @@ class ventanaGestionarTareas(ctk.CTkToplevel):
         self.btn_crear = ctk.CTkButton(self, text="Añadir Tarea", command= VentanaAnadirTareas)
         self.btn_crear.pack(pady=20)
 
-        #ver tareas/editar/eliminar/completar
+        #ver tareas/editar/eliminar/completar/filtros
         self.btn_tareas = ctk.CTkButton(self, text="Tareas", command= VentanaTareas)
         self.btn_tareas.pack(pady=20)
 
@@ -123,47 +122,43 @@ class VentanaTareas(ctk.CTkToplevel):
         self.title("Marcar Tareas")
         self.geometry("800x600")
 
-        self.frame_busqueda = ctk.CTkFrame(self, fg_color="transparent")
-        self.frame_busqueda.pack(pady=10, fill="x", padx=20)
+        frame_btn_up = ctk.CTkFrame(self,border_width=2, border_color="#1f538d", width=50, height=50)
+        frame_btn_up.pack_propagate(False)
+        frame_btn_up.pack(fill="x", pady=5, padx=5)
 
-        self.entrada_busqueda = ctk.CTkEntry(self.frame_busqueda, 
-                                            placeholder_text="🔍 Buscar tarea por nombre...",
-                                            height=35)
-        self.entrada_busqueda.pack(side="left", fill="x", expand=True, padx=(0, 10))
-        
-        self.entrada_busqueda.bind("<KeyRelease>", self.al_escribir)
-
-        self.btn_limpiar = ctk.CTkButton(self, text="Limpiar", width=30, fg_color="#2C2697",
+        self.btn_limpiar = ctk.CTkButton(frame_btn_up, text="Limpiar", width=30, fg_color="#2C2697",
                                             command= lambda: self.actualizar_limpieza())
-        self.btn_limpiar.pack(pady=10)
+        self.btn_limpiar.pack(side="left",padx=10)
+
+        self.btn_ord_hoy = ctk.CTkButton(frame_btn_up, text="Habitos Hoy", width=30, fg_color="#2C2697",
+                                        command= lambda: self.mostrar_tareas(filtro=filtro_hoy))
+        self.btn_ord_hoy.pack(side="right", padx=10)
+
+        self.btn_pend_hoy = ctk.CTkButton(frame_btn_up, text="Pendientes hoy", width=30, fg_color="#2C2697",
+                                        command= lambda: self.mostrar_tareas(filtro=filtro_pendientes_hoy))
+        self.btn_pend_hoy.pack(side="right", padx=10)
+
+        self.btn_ord_todo = ctk.CTkButton(frame_btn_up, text="Todas las tareas", width=30, fg_color="#2C2697",
+                                        command= lambda: self.mostrar_tareas(filtro=filtro_todas))
+        self.btn_ord_todo.place(relx=0.5, rely=0.5, anchor=ctk.CENTER)
 
         self.scroll_tareas = ctk.CTkScrollableFrame(self, label_text="Lista de Actividades")
         self.scroll_tareas.pack(padx=20, pady=20, fill="both", expand=True)
 
-        self.mostrar_tareas()
+        self.mostrar_tareas(filtro=filtro_todas)
 
-    def al_escribir(self, event):
-        texto = self.entrada_busqueda.get()
-        self.mostrar_tareas(filtro=texto)
-
-
-    def mostrar_tareas(self,filtro=""):
+    def mostrar_tareas(self, filtro):
         for widget in self.scroll_tareas.winfo_children():
             widget.destroy()
 
-        tareas,tareas_rutina = cargar_tareas()
+        tareas, tareas_rutina = filtro()
 
-        tareas_filtradas = [tarea for tarea in tareas if filtro.lower() in tarea.nombre.lower()]
-        rutinas_filtradas = [rutina for rutina in tareas_rutina if filtro.lower() in rutina.nombre.lower()]
-
-        if not tareas_filtradas and not rutinas_filtradas:
-            ctk.CTkLabel(self.scroll_tareas, text="No se encontraron coincidencias 😕", font=("Roboto", 14, "italic")).pack(pady=20)
-
-        self.creacion_seccion("-----Tareas-----", tareas_filtradas, es_rutina=False)
-        self.creacion_seccion("-----Habitos-----",rutinas_filtradas, es_rutina=True)
+        if tareas is not None:
+            self.creacion_seccion("-----Tareas-----", tareas, es_rutina=False)
+        if tareas_rutina is not None:
+            self.creacion_seccion("-----Habitos-----",tareas_rutina, es_rutina=True)
 
     def creacion_seccion(self,titulo,lista,es_rutina):
-
         ctk.CTkLabel(self.scroll_tareas,text=titulo,font=("Roboto", 16, "bold")).pack(pady=10)
 
         for i, tarea in enumerate(lista):
@@ -178,7 +173,7 @@ class VentanaTareas(ctk.CTkToplevel):
 
             #eliminar tarea
             boton_elimnar = ctk.CTkButton(fila,text="x", width=30, fg_color="#922b21", hover_color="#641e16",
-                                            command=lambda id_tarea = tarea.id, r=es_rutina, msg=True,tipo=tarea.tipo : self.actualizar_eliminar(id_tarea,r,msg,tipo))
+                                            command=lambda id_tarea = tarea.id, msg=True,tipo=tarea.tipo : self.actualizar_eliminar(id_tarea,msg,tipo))
             boton_elimnar.pack(side="right", padx=10)
 
             #editar tarea
@@ -204,25 +199,24 @@ class VentanaTareas(ctk.CTkToplevel):
 
     def actualizar_limpieza(self):
         limpiar_tareas()
-        self.mostrar_tareas()
+        self.mostrar_tareas(filtro=filtro_todas)
 
     def actualizar_fallar(self,id_tarea,tipo):
         fallar_tarea(id_tarea,tipo)
-        self.mostrar_tareas()
+        self.mostrar_tareas(filtro=filtro_todas)
     
     def actualizar_completar(self,id_tarea,tipo):
         completar(id_tarea,tipo)
-        self.mostrar_tareas()
+        self.mostrar_tareas(filtro=filtro_todas)
     
-    def actualizar_eliminar(self,id_tarea,r,msg,tipo):
-        eliminar_tarea(id_tarea,r,msg,tipo)
-        self.mostrar_tareas()
+    def actualizar_eliminar(self,id_tarea,msg,tipo):
+        eliminar_tarea(id_tarea,msg,tipo)
+        self.mostrar_tareas(filtro=filtro_todas)
         
 
     def editar_tarea(self,id_tarea,r,msg,tipo):
         confirmacion = messagebox.askyesno("Editar","¿Desea editar esta tarea?")
         if confirmacion:
-            eliminar_tarea(id_tarea,r,msg,tipo)
+            eliminar_tarea(id_tarea,msg,tipo)
             VentanaAnadirTareas()
-            self.mostrar_tareas()
-
+            self.mostrar_tareas(filtro=filtro_todas)

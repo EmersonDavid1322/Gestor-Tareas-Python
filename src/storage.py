@@ -4,10 +4,11 @@ import sys
 
 if getattr(sys, 'frozen', False):
     ruta_base = os.path.dirname(sys.executable)
+    CARPETA_DATA = os.path.join(ruta_base, "data")
 else:
     ruta_base = os.path.dirname(os.path.abspath(__file__))
+    CARPETA_DATA = os.path.join(os.path.dirname(ruta_base), "data")
 
-CARPETA_DATA = os.path.join(os.path.dirname(ruta_base), "data")
 os.makedirs(CARPETA_DATA, exist_ok=True)
 
 RUTA_FRASES = os.path.join(CARPETA_DATA, "frases.json")
@@ -64,7 +65,6 @@ def cargar_datos():
 
     except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
         print(f"Error cargando datos: {e}")
-        # Valores por defecto en caso de fallo
         lista_frases = []
         webhook, usar_frase, token, canal, puntos = "", True, "", "", 0
         

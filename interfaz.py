@@ -5,9 +5,6 @@ from src.config import VentanaConfiguraciones
 from src.interfaz_gestor import ventanaGestionarTareas
 from src.base_sql import crear_tablas, resturar_tarea
 
-crear_tablas()
-crear_archivos()
-
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
@@ -213,7 +210,7 @@ class VentanaEstadisticas(ctk.CTkToplevel):
 
         # LA BARRA
         self.barra_progreso = ctk.CTkProgressBar(self, width=400, height=20)
-        self.barra_progreso.set(porcentaje) # Aquí le damos el valor
+        self.barra_progreso.set(porcentaje)
         self.barra_progreso.pack(pady=10)
         
         # Texto debajo de la barra
@@ -223,5 +220,7 @@ class VentanaEstadisticas(ctk.CTkToplevel):
 
 
 if __name__ == "__main__":
+    crear_archivos()
+    crear_tablas()
     ventana = VentanaMenu()
     ventana.mainloop()

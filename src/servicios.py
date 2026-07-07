@@ -116,7 +116,7 @@ def fallar_tarea(id,tipo):
         messagebox.showerror("Fallar","Esta tarea no se a completado o ya ha sido marcada como fallida")
 
 
-def eliminar_tarea(id_tarea,r,msg,tipo):
+def eliminar_tarea(id_tarea,msg,tipo):
         tareas, tareas_rutina = cargar_tareas()
 
         tarea_eliminar = validar_tarea_id(id_tarea,tipo,tareas,tareas_rutina)
@@ -127,10 +127,7 @@ def eliminar_tarea(id_tarea,r,msg,tipo):
             confirmacion = True
         
         if confirmacion:
-            if r:
-                eliminar_tarea_sql(tarea_eliminar)
-            else:
-                eliminar_tarea_sql(tarea_eliminar)
+            eliminar_tarea_sql(tarea_eliminar)
 
 def mostrar_info_tarea(id, r,tipo):
         tareas, tareas_rutina = cargar_tareas()
@@ -153,10 +150,31 @@ def mostrar_info_tarea(id, r,tipo):
 
         messagebox.showinfo(f"Detalles de {t.nombre}", texto_info)
 
-def felicitar_racha(tarea,racha):
-    if racha == 3:
-        messagebox.showinfo("Felicidades",f"Felicidades por tu racha de 3 dias en el habtito de *{tarea.nombre}*, ¡SIgue asi! 🔥")
-    elif racha == 7:
-        messagebox.showinfo("Felicidades",f"¡Felicidades por tu racha de una semana! en el habtito de *{tarea.nombre}*, ¡SIgue asi! 🔥")
-    elif racha == 30:
-        messagebox.showinfo("Felicidades",f"¡Felicidades por tu racha de un mes! en el habtito de *{tarea.nombre}*, ¡SIgue asi! 🔥")
+def filtro_todas():
+    tareas, habitos = cargar_tareas()
+    return tareas, habitos
+
+def filtro_hoy():
+    tareas, habitos = cargar_tareas()
+
+    filtro = []
+    for tarea in habitos:
+        if tarea.disponible_hoy():
+            filtro.append(tarea)
+
+    return None, filtro
+
+def filtro_pendientes_hoy():
+    tareas, habitos = cargar_tareas()
+    
+    tareas_pendientes, habitos_pendientes = [], []
+
+    for tarea in tareas:
+        if tarea.pendiente_hoy():
+            tareas_pendientes.append(tarea)
+
+    for habito in habitos:
+        if habito.pendiente_hoy():
+            habitos_pendientes.append(habito)
+
+    return tareas_pendientes, habitos_pendientes

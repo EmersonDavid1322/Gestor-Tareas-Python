@@ -217,4 +217,5 @@ async def ayuda(ctx):
     await ctx.send(embed=embed)
 
 if __name__ == "__main__":
+    print(token)
     bot.run(token)

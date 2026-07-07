@@ -37,6 +37,13 @@ class Tarea:
         
         return True, puntaje
     
+    def disponible_hoy(self):
+        return None
+    
+    def pendiente_hoy(self):
+        if self.estado == "Pendiente":
+            return True
+
     def mensaje_extra(self):
         return None
 
@@ -56,6 +63,7 @@ class TareaRutina(Tarea):
             return f"| {self.nombre.title()} | {self.prioridad.title()} | {estado} | {self.hora} |"
         elif self.estado == "Pendiente" or "Fallida" in self.estado:
             estado = self.estado
+            return f"| {self.nombre.title()} | {self.prioridad.title()} | {estado} | {self.hora} |"
         else:
             estado = "Libre por hoy"
 
@@ -85,6 +93,19 @@ class TareaRutina(Tarea):
         self.estado = f"Fallida {fecha_m}"
         self.racha = 0
         return True
+    
+    def disponible_hoy(self):
+        ahora = datetime.now()
+        dia_hoy = ahora.strftime('%A')
+
+        for dia in self.dias:
+            if dia == dia_hoy:
+                return True
+            
+    def pendiente_hoy(self):
+        fecha_m = datetime.now().strftime("%d/%m/%Y")
+        if self.estado != f"Habito completado el {fecha_m}" and self.disponible_hoy():
+            return True
 
     def mensaje_extra(self):
         mensaje = None
