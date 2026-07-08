@@ -6,7 +6,7 @@ import random
 from babel.dates import get_day_names
 from src.storage import cargar_datos
 from src.base_sql import cargar_tareas,cargar_registros,guardar_historial,guardar_registros,estado_tarea
-from src.logger import crear_log
+from config_logs import crear_log
 
 puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
@@ -30,7 +30,7 @@ async def on_ready():
         else:
                 crear_log("ERROR",f"No pude encontrar el canal con ID: {id_canal}. ¿El bot está en ese servidor?")
     except ValueError:
-        crear_log("ERROR",f"❌ Error: El ID del canal guardado ('{canal}') no es válido.")
+        crear_log("ERROR",f"❌ Error: El ID del canal guardado ('{canal}') no es  válido.")
 
 
 @bot.event

@@ -26,6 +26,27 @@ rm -rf "$BASE_DIR/build"
 rm -rf "$BASE_DIR/dist"
 rm -f "$BASE_DIR"/*.spec
 
+# 3.5. ACTIVAR EL ENTORNO VIRTUAL PARA EL SCRIPT
+echo "🌐 Activando entorno virtual..."
+if [ -f "$BASE_DIR/.venv/bin/activate" ]; then
+    source "$BASE_DIR/.venv/bin/activate"
+else
+    echo "❌ No se encontró el entorno virtual en $BASE_DIR/.venv"
+    echo "🔨 Creando entorno virtual e instalando dependencias..."
+    
+    python3 -m venv "$BASE_DIR/.venv"
+    
+    source "$BASE_DIR/.venv/bin/activate"
+    
+    if [ -f "$BASE_DIR/requirements.txt" ]; then
+        pip install --upgrade pip 
+        pip install -r "$BASE_DIR/requirements.txt"
+        echo "✅ Entorno virtual creado y dependencias instaladas correctamente"
+    else
+        echo "⚠️ Advertencia: No se encontró el archivo requirements.txt en $BASE_DIR"
+    fi
+fi
+
 # 4. Compilar ejecutables
 echo "⚙️ Compilando bot..."
 pyinstaller --noconfirm --onefile \

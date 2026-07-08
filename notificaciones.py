@@ -7,7 +7,7 @@ import random
 import time
 from src.base_sql import cargar_tareas
 from src.storage import cargar_datos
-from src.logger import crear_log
+from config_logs import crear_log
 
 RUTA_MEMORIA_NOTI = "/tmp/ultima_noti_disciplina.txt"
 
