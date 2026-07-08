@@ -1,10 +1,12 @@
 import discord
 from discord.ext import commands
+from discord.errors import LoginFailure
 from datetime import datetime
 import random
 from babel.dates import get_day_names
 from src.storage import cargar_datos
 from src.base_sql import cargar_tareas,cargar_registros,guardar_historial,guardar_registros,estado_tarea
+from src.logger import crear_log
 
 puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
@@ -18,7 +20,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 @bot.event
 async def on_ready():
     puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
-    print(f'✅ Bot conectado como {bot.user}')
+    crear_log("INFO",f'Bot conectado exitosamente como {bot.user}')
     try:
         id_canal = int(canal)
         canal_eventos = bot.get_channel(id_canal)
@@ -26,9 +28,10 @@ async def on_ready():
         if canal_eventos:
             await canal_eventos.send("**Bot conectado y funcionando correctamente**\n")
         else:
-                print(f"❌ No pude encontrar el canal con ID: {id_canal}. ¿El bot está en ese servidor?")
+                crear_log("ERROR",f"No pude encontrar el canal con ID: {id_canal}. ¿El bot está en ese servidor?")
     except ValueError:
-        print(f"❌ Error: El ID del canal guardado ('{canal}') no es un número válido.")
+        crear_log("ERROR",f"❌ Error: El ID del canal guardado ('{canal}') no es válido.")
+
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -217,5 +220,11 @@ async def ayuda(ctx):
     await ctx.send(embed=embed)
 
 if __name__ == "__main__":
-    print(token)
-    bot.run(token)
+    try:
+        bot.run(token)
+    
+    except LoginFailure:
+        crear_log("CRITICO", f"El token proporcionado no es válido o está vacío. Revisa tu archivo de configuración.\n{token}")
+    
+    except Exception as e:
+        crear_log("ERROR", f"Error inesperado al ejecutar el bot: {e}")

@@ -7,6 +7,7 @@ import random
 import time
 from src.base_sql import cargar_tareas
 from src.storage import cargar_datos
+from src.logger import crear_log
 
 RUTA_MEMORIA_NOTI = "/tmp/ultima_noti_disciplina.txt"
 
@@ -60,31 +61,27 @@ def enviar_notificacion():
                 id_tarea = f"{tarea.nombre}:{tarea.hora}:{fecha}"
 
                 if tarea.tipo == "Unica":
-                    print("ENTRÓ AL IF 🔥 Unica")
                     if ultima_notificacion != id_tarea and tarea.estado == "Pendiente":
                         notificacion_tareas(tarea.nombre.title(),f"Ya es hora de completar la tarea de {tarea.nombre} \n{frase_motivadora}")
-                    
+                        crear_log("INFO",f"Se envio una notifcación de la tarea {tarea}")
+
                         with open(RUTA_MEMORIA_NOTI, "w") as f:
                             f.write(id_tarea)
-
-                        print(f"✅ Notificado: {id_tarea}")
                         return
                 else:
-                    print("Rutina")
                     if f"Habito completado el {fecha}" in tarea.estado:
-                        print("Fecha conside con estado")
                         return
                     elif tarea.estado == "Pendiente" and ultima_notificacion != id_tarea and dia_hoy in tarea.dias:
                         print(f"Enviado {tarea.estado} Pendiente")
                         notificacion_tareas(tarea.nombre.title(),f"Ya es hora de completar la tarea de {tarea.nombre} \n{frase_motivadora}")
-
+                        crear_log("INFO",f"Se envio una notifcación de la tarea {tarea}")
                         with open(RUTA_MEMORIA_NOTI, "w") as f:
                             f.write(id_tarea)
 
                     elif ultima_notificacion != id_tarea and dia_hoy in tarea.dias:
                         print(f"Enviando {tarea.estado}")
                         notificacion_tareas(tarea.nombre.title(),f"Ya es hora de completar la tarea de {tarea.nombre} \n{frase_motivadora}")
-                    
+                        crear_log("INFO",f"Se envio una notifcación de la tarea {tarea}")
                         with open(RUTA_MEMORIA_NOTI, "w") as f:
                             f.write(id_tarea)
 
@@ -118,7 +115,7 @@ def enviar_notificacion_diaria():
 
 def daemon_notificaciones():
     print("🚀 Vigilante de Disciplina iniciado...")
-    print("Version 1.4")
+    print("Version 1.5")
 
     while True:
         enviar_notificacion_diaria()
