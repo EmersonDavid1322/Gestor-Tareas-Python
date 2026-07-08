@@ -51,19 +51,28 @@ Aplicación de escritorio para Linux que combina gestión de tareas, seguimiento
 ## Arquitectura
 
 ```
-gestor-disciplina/
-├── interfaz.py          # Ventana principal y navegación
-├── interfaz_gestor.py   # Ventana de gestión de tareas
-├── clases.py            # Modelos Tarea y TareaRutina
-├── base_sql.py          # Capa de acceso a datos SQLite
-├── servicios.py         # Lógica de negocio
-├── storage.py           # Configuración y datos en JSON
-├── config.py            # Ventana de configuraciones
-├── notificaciones.py    # Daemon de notificaciones
-├── discord_bot.py       # Bot de Discord
-├── Recordatorio.py      # Envío de recordatorios por webhook
-├── installer.sh         # Compilación y instalación automática
-└── systemd.sh           # Configuración de servicios systemd
+└── Gestor-Tareas-Python
+    ├── assets
+    │   ├── dota2-notification.mp3
+    │   └── icono.png
+    ├── scripts
+    │   ├── installer.sh
+    │   └── systemd.sh
+    ├── src
+    │   ├── base_sql.py
+    │   ├── clases.py
+    │   ├── config_logs.py
+    │   ├── config.py
+    │   ├── interfaz_gestor.py
+    │   ├── recordatorio.py
+    │   ├── servicios.py
+    │   └── storage.py
+    ├── .gitignore
+    ├── discord_bot.py
+    ├── interfaz.py
+    ├── notificaciones.py
+    ├── README.md
+    └── requirements.txt
 ```
 
 ## Instalación
@@ -71,7 +80,7 @@ gestor-disciplina/
 ```bash
 git clone https://github.com/EmersonDavid1322/Gestor-Tareas-Python
 cd gestor-disciplina
-bash installer.sh
+bash scripts/installer.sh
 ```
 
 El instalador compila los tres ejecutables con PyInstaller, los copia a `~/apps/gestor/` y configura los servicios de systemd automáticamente.
