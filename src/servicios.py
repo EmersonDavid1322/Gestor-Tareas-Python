@@ -3,10 +3,8 @@ import tkinter.messagebox as messagebox
 from src.clases import TareaRutina,Tarea
 from src.storage import guardar_datos,cargar_datos
 from src.base_sql import guardar_tareas, cargar_tareas,estado_tarea,eliminar_tarea_sql
-
+from src.resultados import ResultadoOperacion ,ResultadoCompletar
 print("Versión 1.3 servicios")
-
-
 
 def validar_tarea_id(id,tipo,tareas,tareas_rutina):
     for t in tareas + tareas_rutina:
@@ -19,136 +17,92 @@ def validar_tarea_nombre(nombre,tareas,tareas_rutina):
         if t.nombre == nombre:
             return t
 
+def tarea_existe(nombre):
+    tareas, tareas_rutina = cargar_tareas()
+    return validar_tarea_nombre(nombre, tareas, tareas_rutina) is not None
+
 def agregar_tarea(tipo,nombre,prioridad,tiempo,dias): 
-        tareas, tareas_rutina = cargar_tareas()
-        id_tarea = 0
+    id_tarea = 0
 
-        fecha = datetime.now().strftime("%d/%m/%Y")
-        estado = "Pendiente"
+    fecha = datetime.now().strftime("%d/%m/%Y")
+    estado = "Pendiente"
 
-        if tipo == "Tarea":
-            tipo_t  = "Unica"
-            tarea_datos = Tarea(id=id_tarea,
-                                creacion=fecha,
-                                estado=estado,
-                                tipo=tipo_t,
-                                nombre=nombre,
-                                prioridad=prioridad,
-                                hora=tiempo)
-        else:
-            tipo_t = "Rutina"
-            racha = 0
-            tarea_datos = TareaRutina(
-                                id=id_tarea,
-                                creacion=fecha,
-                                estado=estado,
-                                tipo=tipo,
-                                racha=racha,
-                                nombre=nombre,
-                                prioridad=prioridad,
-                                hora=tiempo,
-                                dias=dias
-                                )
+    if tipo == "Tarea":
+        tipo_t  = "Unica"
+        tarea_datos = Tarea(id=id_tarea,
+                            creacion=fecha,
+                            estado=estado,
+                            tipo=tipo_t,
+                            nombre=nombre,
+                            prioridad=prioridad,
+                            hora=tiempo)
+    else:
+        tipo_t = "Rutina"
+        racha = 0
+        tarea_datos = TareaRutina(
+                            id=id_tarea,
+                            creacion=fecha,
+                            estado=estado,
+                            tipo=tipo,
+                            racha=racha,
+                            nombre=nombre,
+                            prioridad=prioridad,
+                            hora=tiempo,
+                            dias=dias
+                            )
 
-        tarea_añadir = validar_tarea_nombre(tarea_datos.nombre,tareas,tareas_rutina)
-
-        if tarea_añadir is None:
-            if tarea_datos.tipo == "Rutina":
-                tareas_rutina.append(tarea_datos)
-                guardar_tareas(tarea_datos.tipo,tarea_datos)
-                messagebox.showinfo("Añadir Tareas",f"Tarea rutina agregada {tarea_datos.nombre} correctamente")
-                return
-            else:
-                tareas.append(tarea_datos)
-                guardar_tareas(tarea_datos.tipo,tarea_datos)
-                messagebox.showinfo("Añadir Tareas",f"Tarea agregada {tarea_datos.nombre} correctamente")
-                return
-        else:
-            if tarea_datos.tipo == "Rutina":
-                respuesta = messagebox.askyesno("Tarea Duplicada", f"La tarea '{nombre}' ya existe. ¿Deseas duplicarla?")
-                if respuesta:
-                    tareas_rutina.append(tarea_datos)
-                    guardar_tareas(tarea_datos.tipo,tarea_datos)
-                    messagebox.showinfo("Añadir Tareas",f"Tarea agregada {tarea_datos.nombre} correctamente")
-                return
-            else:
-                respuesta = messagebox.askyesno("Tarea Duplicada", f"La tarea '{nombre}' ya existe. ¿Deseas duplicarla?")
-                if respuesta:
-                    tareas.append(tarea_datos)
-                    guardar_tareas(tarea_datos.tipo,tarea_datos)
-                    messagebox.showinfo("Añadir Tareas",f"Tarea agregada {tarea_datos.nombre} correctamente")
-                return
+    if tarea_datos.tipo == "Rutina":
+        guardar_tareas(tarea_datos.tipo,tarea_datos)
+        return ResultadoOperacion(exito=True, mensaje=f"Tarea rutina agregada {tarea_datos.nombre} correctamente")
+    else:
+        guardar_tareas(tarea_datos.tipo,tarea_datos)
+        return ResultadoOperacion(exito=True, mensaje=f"Tarea agregada {tarea_datos.nombre} correctamente")
 
 def completar(id,tipo):
-        puntos_v, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
-        tareas, tareas_rutina = cargar_tareas()
+    puntos_v, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+    tareas, tareas_rutina = cargar_tareas()
 
-        marcar_tarea = validar_tarea_id(id,tipo,tareas,tareas_rutina)
+    marcar_tarea = validar_tarea_id(id,tipo,tareas,tareas_rutina)
+    if marcar_tarea is None:
+        return ResultadoCompletar(exito=False, mensaje="No se encontro la tarea", puntaje=0)
 
-        completado, puntaje = marcar_tarea.completar()
-        
-        if completado:
-            puntos_v += puntaje
+    completado, puntaje_tarea = marcar_tarea.completar()
+    
+    if completado:
+        puntos_v += puntaje_tarea
 
-            estado_tarea(marcar_tarea)
-            messagebox.showinfo("Completar","¡Felicidades! Has completado una tarea, sigue asi")
-            messagebox.showinfo("Completar",f"¡Felicidades! Tu puntaje de diciplina subio con: {puntaje} sigue asi")
-            
-            mensaje = marcar_tarea.mensaje_extra()
-            if mensaje is not None:
-                messagebox.showinfo("Racha", mensaje)
-
-            guardar_datos(puntos_v,webhook,lista_frases,usar_frase,token,canal)
-        else:
-            messagebox.showwarning("Completar","Tarea ya marcada")
+        estado_tarea(marcar_tarea)
+        resultado = ResultadoCompletar(exito=True, mensaje="¡Felicidades! Has completado una tarea, sigue asi",
+                                        puntaje=puntaje_tarea, mensaje_racha=marcar_tarea.mensaje_extra())
+        guardar_datos(puntos_v,webhook,lista_frases,usar_frase,token,canal)
+        return resultado
+    else:
+        return ResultadoCompletar(exito=False, mensaje="Tarea ya marcada", puntaje=0)
 
 def fallar_tarea(id,tipo):
     tareas, tareas_rutina = cargar_tareas()
 
     tarea_f = validar_tarea_id(id,tipo,tareas,tareas_rutina)
+    if tarea_f is None:
+        return ResultadoOperacion(exito=False, mensaje="Tarea no encontrada")
 
     fallar = tarea_f.fallar()
 
     if fallar:
         estado_tarea(tarea_f)
-        messagebox.showinfo("Fallar","Lo importante no es cuantas veces caes, sino la fuerza que te hace volver a levantarte")
+        return ResultadoOperacion(exito=True,mensaje="Lo importante no es cuantas veces caes, sino la fuerza que te hace volver a levantarte")
     else:
-        messagebox.showerror("Fallar","Esta tarea no se a completado o ya ha sido marcada como fallida")
+        return ResultadoOperacion(exito=False,mensaje="Esta tarea no se a completado o ya ha sido marcada como fallida")
 
+def eliminar_tarea(id_tarea,tipo):
+    tareas, tareas_rutina = cargar_tareas()
 
-def eliminar_tarea(id_tarea,msg,tipo):
-        tareas, tareas_rutina = cargar_tareas()
+    tarea_eliminar = validar_tarea_id(id_tarea,tipo,tareas,tareas_rutina)
+    if tarea_eliminar is None:
+        return ResultadoOperacion(exito=False,mensaje="Tarea no encontrada")
 
-        tarea_eliminar = validar_tarea_id(id_tarea,tipo,tareas,tareas_rutina)
-
-        if msg:
-            confirmacion = messagebox.askyesno("Elimnar","¿Desea eliminar esta tarea?")
-        else:
-            confirmacion = True
-        
-        if confirmacion:
-            eliminar_tarea_sql(tarea_eliminar)
-
-def mostrar_info_tarea(id, r,tipo):
-        tareas, tareas_rutina = cargar_tareas()
-        t = validar_tarea_id(id,tipo,tareas,tareas_rutina)
-
-        texto_info = (
-            f"📅 Creada: {t.creacion}\n"
-            f"📝 ID: {t.id}"
-            f"📝 Nombre: {t.nombre}\n"
-            f"🏷️ Tipo: {t.tipo}\n"
-            f"🔥 Prioridad: {t.prioridad}\n"
-            f"📊 Estado: {t.estado}\n"
-            f"⏰ Hora: {t.hora}"
-        )
-        
-        if r:
-            texto_info += f"\n🔥 Racha: {t.racha}"
-            dias_str = ", ".join(t.dias)
-            texto_info += f"\n🗓️ Días: {dias_str}"
-
-        messagebox.showinfo(f"Detalles de {t.nombre}", texto_info)
+    eliminar_tarea_sql(tarea_eliminar)
+    return ResultadoOperacion(exito=True,mensaje="Tarea eliminada correctamente")
 
 def filtro_todas():
     tareas, habitos = cargar_tareas()

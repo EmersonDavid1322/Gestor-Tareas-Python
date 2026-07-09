@@ -17,6 +17,17 @@ class Tarea:
 
     def __str__(self):
         return f"| {self.nombre.title()} | {self.prioridad.title()} | {self.estado.title()} | {self.hora} |"
+    
+    def info_completa(self):
+        return (
+            f"📅 Creada: {self.creacion}\n"
+            f"📝 ID: {self.id}\n"
+            f"📝 Nombre: {self.nombre}\n"
+            f"🏷️ Tipo: {self.tipo}\n"
+            f"🔥 Prioridad: {self.prioridad}\n"
+            f"📊 Estado: {self.estado}\n"
+            f"⏰ Hora: {self.hora}"
+        )
 
     def _calcular_puntaje(self):
         if self.prioridad == "Alta":
@@ -73,6 +84,11 @@ class TareaRutina(Tarea):
                 estado = mensaje
 
         return f"| {self.nombre.title()} | {self.prioridad.title()} | {estado} | {self.hora} |"
+
+    def info_completa(self):
+        texto_base = super().info_completa()
+        dias_str = ", ".join(self.dias)
+        return texto_base + f"\n🔥 Racha: {self.racha}\n🗓️ Días: {dias_str}"
 
     def completar(self):
         fecha_m = datetime.now().strftime("%d/%m/%Y")
