@@ -16,8 +16,6 @@ echo "Elimanada la verison antigua"
 
 mkdir -p "$DESTINO_APP"
 
-
-
 echo "📁 Preparando carpeta: $DESTINO_APP"
 echo "🚀 Iniciando compilación en: $BASE_DIR"
 
@@ -94,3 +92,21 @@ echo "✅ ¡Todo listo! Ejecuta:"
 echo "$DESTINO_APP/GestorDisciplina"
 
 bash "$BASE_DIR/scripts/systemd.sh"
+
+echo "Creando acceso directo"
+
+RUTA_DESKTOP="$HOME/.local/share/applications/gestor_diciplina.desktop"
+cat << EOF > "$RUTA_DESKTOP"
+[Desktop Entry]
+Type=Application
+Name=Gestor Disciplina
+Exec=$DESTINO_APP/GestorDisciplina
+Icon=$DESTINO_APP/assets/icono.png
+Categories=Development;
+Terminal=false
+Path=$DESTINO_APP
+EOF
+
+chmod +x "$RUTA_DESKTOP"    
+update-desktop-database ~/.local/share/applications
+echo "Acceso creado correctamente"

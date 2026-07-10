@@ -5,8 +5,9 @@ from datetime import datetime
 import random
 from babel.dates import get_day_names
 from src.storage import cargar_datos
-from src.base_sql import cargar_tareas,cargar_registros,guardar_historial,guardar_registros,estado_tarea
-from config_logs import crear_log
+from src.base_sql import cargar_tareas,cargar_registros
+from src.config_logs import crear_log
+from src.servicios import completar, fallar_tarea
 
 puntos, webhook, lista_frases, usar_frase, token, canal = cargar_datos()
 
@@ -47,7 +48,7 @@ async def on_command_error(ctx, error):
 
 @bot.command()
 async def tareas(ctx, tipo: str):
-    tareas_u, tareas_rutina = cargar_tareas()
+    _, tareas_rutina = cargar_tareas()
     fecha_hoy = datetime.now().strftime("%d/%m/%Y")
 
     hoy = datetime.now()
@@ -58,6 +59,9 @@ async def tareas(ctx, tipo: str):
         todas = False
     elif tipo == "todas":
         todas = True
+    else:
+        await ctx.send("Parametro no valido")
+        return
 
     if not tareas_rutina:
         await ctx.send("No hay tareas pendientes. ¡Día libre! ☕")
@@ -82,53 +86,38 @@ async def tareas(ctx, tipo: str):
 
 @bot.command()
 async def hecho(ctx, numero: int):
-    tareas_u, tareas_rutina = cargar_tareas()
-    fecha = datetime.now()
-    fecha_m = fecha.strftime("%d/%m/%Y")
-    
-    fecha_hoy = datetime.now().strftime("%d/%m/%Y")
+    _, tareas_rutina = cargar_tareas()
     indice_real = numero -1
-
     try:
-        tarea = tareas_rutina[indice_real]
         if indice_real < 0:
             raise IndexError
-        if fecha_hoy in str(tarea.estado):
-            await ctx.send(f"⚠️ La tarea **{tarea.nombre}** ya ha sido marcada como completa hoy.")
-            return
-
-        estado = f"Habito completado el {fecha_m}"
-        racha =tarea.racha + 1
-        estado_tarea(estado,racha,tarea)
-
-        accion = "Se completo la Tarea Rutina"
-        guardar_registros(tarea,estado,accion)
-
-        await ctx.send(f"⭐ ¡Muy bien! Has completado: **{tarea.nombre}**")
-        racha_visual = "🔥" * tarea.racha
-        await ctx.send(f"Tu racha actual es: ({racha} {racha_visual})")
         
+        tarea = tareas_rutina[indice_real]
+        resultado = completar(tarea.id, tarea.tipo)
+
+        if resultado.exito:
+            await ctx.send(resultado.mensaje)
+            if resultado.mensaje_racha is not None:
+                await ctx.send(resultado.mensaje_racha)
+        else:
+            await ctx.send(f"Error tareas: {resultado.mensaje}")
     except IndexError:
-        await ctx.send("Ese número de tarea no existe \n Revisa la lista con `!tareas`.")
+        await ctx.send("Ese número de tarea no existe \nRevisa la lista con `!tareas`.")
 
 @bot.command()
 async def fallo(ctx, numero: int):
-    fecha_m = datetime.now().strftime("%d/%m/%Y")
-    tareas_u, tareas_rutina = cargar_tareas()
+    _, tareas_rutina = cargar_tareas()
     indice_real = numero -1
     try:
         tarea = tareas_rutina[indice_real]
         if indice_real < 0:
-            raise IndexError
-        
+            raise IndexError 
     
-        await ctx.send(f"La racha de la tarea **{tarea.nombre}** se reinicio a 0 \n racha de **🔥{tarea.racha}** días perdida")
-        racha = 0
-        estado = f"Fallida {fecha_m}"
-        estado_tarea(estado,racha,tarea)
-
-        accion = "Se Fallo la Tarea Rutina"
-        guardar_registros(tarea,estado,accion)
+        resultado = fallar_tarea(tarea.id, tarea.tipo)
+        if resultado.exito:
+            await ctx.send(resultado.mensaje)
+        else:
+            await ctx.send(f"Erro al fallar: {resultado.mensaje}")
 
     except IndexError:
         await ctx.send("Ese número de tarea no existe \n Revisa la lista con `!tareas`.")
@@ -175,7 +164,7 @@ async def estadisticas(ctx, tipo_lista: str):
 
 @bot.command()
 async def racha(ctx):
-    tareas, historial, puntos, tareas_rutina, registro_cumplidos,webhook, lista_frases, usar_frase, token, canal = cargar_datos()
+    tareas_u, tareas_rutina = cargar_tareas()
     max_racha = max(t.racha for t in tareas_rutina)
     tarea_top = next(t for t in tareas_rutina if t.racha == max_racha)
     
@@ -212,7 +201,7 @@ async def ayuda(ctx):
     embed.add_field(name="`!racha`", value="Muesta tu mejor racha actualmente junto con la cantidad de días.", inline=False)
     embed.add_field(name="`!frase`", value="Muesta frases aletorias que hayas añadido en la lista de frases.", inline=False)
     embed.add_field(name="`!ayuda`", value="Muestra este mensaje de soporte.", inline=False)
-    embed.add_field(name="`VERSION`", value="1.4 Bot Discord", inline=False)
+    embed.add_field(name="`VERSION`", value="1.5s Bot Discord", inline=False)
 
 
     embed.set_footer(text="¡Matento fuerte!")

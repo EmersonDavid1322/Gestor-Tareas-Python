@@ -154,7 +154,7 @@ class VentanaTareas(ctk.CTkToplevel):
         self.scroll_tareas = ctk.CTkScrollableFrame(self, label_text="Lista de Actividades")
         self.scroll_tareas.pack(padx=20, pady=20, fill="both", expand=True)
 
-        self.mostrar_tareas(filtro=filtro_todas)
+        self.mostrar_tareas(filtro=filtro_pendientes_hoy)
 
     def mostrar_tareas(self, filtro):
         for widget in self.scroll_tareas.winfo_children():
@@ -212,13 +212,13 @@ class VentanaTareas(ctk.CTkToplevel):
 
     def actualizar_limpieza(self):
         limpiar_tareas()
-        self.mostrar_tareas(filtro=filtro_todas)
+        self.mostrar_tareas(filtro=filtro_pendientes_hoy)
 
     def actualizar_fallar(self,id_tarea,tipo):
         resultado = fallar_tarea(id_tarea,tipo)
         if resultado.exito:
             messagebox.showinfo("Fallar", resultado.mensaje)
-            self.mostrar_tareas(filtro=filtro_todas)
+            self.mostrar_tareas(filtro=filtro_pendientes_hoy)
         else:
             messagebox.showwarning("Error Fallar", resultado.mensaje)
     
@@ -228,7 +228,7 @@ class VentanaTareas(ctk.CTkToplevel):
             messagebox.showinfo("Completar", resultado.mensaje)
             if resultado.mensaje_racha is not None: 
                 messagebox.showinfo("Racha", resultado.mensaje_racha)
-            self.mostrar_tareas(filtro=filtro_todas)
+            self.mostrar_tareas(filtro=filtro_pendientes_hoy)
         else:
             messagebox.showwarning("Error completar", resultado.mensaje)
     
@@ -239,7 +239,7 @@ class VentanaTareas(ctk.CTkToplevel):
             resultado = eliminar_tarea(id_tarea,tipo)
             if resultado.exito:
                 messagebox.showinfo("Eliminar", resultado.mensaje)
-                self.mostrar_tareas(filtro=filtro_todas)
+                self.mostrar_tareas(filtro=filtro_pendientes_hoy)
             else:
                 messagebox.showwarning("Eliminar", resultado.mensaje)
 
@@ -248,4 +248,4 @@ class VentanaTareas(ctk.CTkToplevel):
         if confirmacion:
             eliminar_tarea(id_tarea,tipo)
             VentanaAnadirTareas()
-            self.mostrar_tareas(filtro=filtro_todas)
+            self.mostrar_tareas(filtro=filtro_pendientes_hoy)

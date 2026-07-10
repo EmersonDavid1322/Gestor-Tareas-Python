@@ -72,7 +72,7 @@ def completar(id,tipo):
         puntos_v += puntaje_tarea
 
         estado_tarea(marcar_tarea)
-        resultado = ResultadoCompletar(exito=True, mensaje="¡Felicidades! Has completado una tarea, sigue asi",
+        resultado = ResultadoCompletar(exito=True, mensaje=f"¡Felicidades! Has completado la tarea {marcar_tarea.nombre}, sigue asi",
                                         puntaje=puntaje_tarea, mensaje_racha=marcar_tarea.mensaje_extra())
         guardar_datos(puntos_v,webhook,lista_frases,usar_frase,token,canal)
         return resultado

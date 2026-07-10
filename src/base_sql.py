@@ -13,10 +13,12 @@ else:
     ruta_base = os.path.dirname(os.path.abspath(__file__))
     CARPETA_DATA = os.path.join(os.path.dirname(ruta_base), "data")
 
-DATA_SQL = os.path.join(CARPETA_DATA, "gestor.db" )
+GESTOR_SQL = os.path.join(CARPETA_DATA, "gestor.db" )
+HISTORIAL_SQL = os.path.join(CARPETA_DATA, "historial.db")
+REGISTRO_SQL = os.path.join(CARPETA_DATA, "registro.db")
 
 def crear_tablas():
-    conexion = sqlite3.connect("data/gestor.db")
+    conexion = sqlite3.connect(GESTOR_SQL)
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -48,7 +50,7 @@ def crear_tablas():
     conexion.commit()
     conexion.close()
 
-    conexion = sqlite3.connect("data/historial.db")
+    conexion = sqlite3.connect(HISTORIAL_SQL)
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -78,7 +80,7 @@ def crear_tablas():
     conexion.commit()
     conexion.close()
 
-    conexion = sqlite3.connect("data/registro.db")
+    conexion = sqlite3.connect(REGISTRO_SQL)
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -94,7 +96,7 @@ def crear_tablas():
 
 
 def guardar_tareas(tipo,tarea):
-    conexion = sqlite3.connect("data/gestor.db")
+    conexion = sqlite3.connect(GESTOR_SQL)
     cursor = conexion.cursor()
 
     if tipo == "Unica":
@@ -110,12 +112,7 @@ def guardar_tareas(tipo,tarea):
             tarea.prioridad,
             tarea.tipo
         ))
-        conexion.commit()
-        conexion.close()
-
         accion = "Se agrego una Tarea Unica"
-        guardar_historial(tarea,accion)
-
     else:
         cursor.execute("""
         INSERT INTO rutinas
@@ -131,18 +128,19 @@ def guardar_tareas(tipo,tarea):
             tarea.racha,
             json.dumps(tarea.dias,ensure_ascii=False)
         ))
-        conexion.commit()
-        conexion.close()
-
         accion = "Se agrego una Tarea Rutina"
-        guardar_historial(tarea,accion)
+    
+    tarea.id = cursor.lastrowid
+    conexion.commit()
+    conexion.close()
+    guardar_historial(tarea,accion)
 
 def guardar_historial(tarea,accion):
     fecha = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
 
     tarea_historial = f"| {tarea.creacion} | {tarea.nombre} | {tarea.tipo} |{tarea.estado} |{tarea.hora} | {tarea.prioridad} |"
     
-    conexion = sqlite3.connect("data/historial.db")
+    conexion = sqlite3.connect(HISTORIAL_SQL)
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -156,7 +154,7 @@ def guardar_historial(tarea,accion):
     conexion.close()
 
 def guardar_papelera(tarea):
-    conexion = sqlite3.connect("data/historial.db")
+    conexion = sqlite3.connect(HISTORIAL_SQL)
     cursor = conexion.cursor()
 
     accion_r = "Se elimino"
@@ -200,7 +198,7 @@ def guardar_registros(tarea,estado,accion):
     fecha = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
     tarea_tegistro = f"| {tarea.creacion} | {tarea.nombre} | {tarea.tipo} | {estado} | {tarea.hora} | {tarea.prioridad} |"
 
-    conexion = sqlite3.connect("data/registro.db")
+    conexion = sqlite3.connect(REGISTRO_SQL)
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -215,7 +213,7 @@ def guardar_registros(tarea,estado,accion):
 
 
 def cargar_tareas():
-    conexion = sqlite3.connect("data/gestor.db")
+    conexion = sqlite3.connect(GESTOR_SQL)
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -265,7 +263,7 @@ def cargar_tareas():
     return tareas, rutinas
 
 def cargar_historial():
-    conexion = sqlite3.connect("data/historial.db")
+    conexion = sqlite3.connect(HISTORIAL_SQL)
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -296,7 +294,7 @@ def cargar_historial():
     return historial
 
 def cargar_registros():
-    conexion = sqlite3.connect("data/registro.db")
+    conexion = sqlite3.connect(REGISTRO_SQL)
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -316,7 +314,7 @@ def cargar_registros():
     return registros
 
 def estado_tarea(tarea):
-    conexion = sqlite3.connect("data/gestor.db")
+    conexion = sqlite3.connect(GESTOR_SQL)
     cursor = conexion.cursor()
 
     if tarea.tipo == "Unica":
@@ -328,36 +326,27 @@ def estado_tarea(tarea):
         SET estado = ?
         WHERE id = ?
         """, (tarea.estado, id_tarea))
-
-        conexion.commit()
-        conexion.close()
-
         accion = "Se completo la Tarea Unica"
-        guardar_registros(tarea,tarea.estado,accion)
-
     else:
         id_tarea = tarea.id
-
         cursor.execute("""
             UPDATE rutinas
             SET estado = ?,
                 racha = ?
             WHERE id = ?
             """, (tarea.estado, tarea.racha, id_tarea))
-
-        conexion.commit()
-        conexion.close()
-
-        if "Habito completado" in tarea.estado:
+        if "Habito completado" in tarea.estado or "Pendiente" in tarea.estado:
             accion = f"Se completo la Tarea Rutina, Racha: {tarea.racha}"
         elif "Fallida" in tarea.estado:
             accion = f"Se fallo la Tarea Rutina"
 
-        guardar_registros(tarea,tarea.estado,accion)
+    conexion.commit()
+    conexion.close()
+    guardar_registros(tarea,tarea.estado,accion)
 
 
 def eliminar_tarea_sql(tarea):
-    conexion = sqlite3.connect("data/gestor.db")
+    conexion = sqlite3.connect(GESTOR_SQL)
     cursor = conexion.cursor()
 
     if tarea.tipo == "Unica":
@@ -383,7 +372,7 @@ def eliminar_tarea_sql(tarea):
         guardar_papelera(tarea)
 
 def resturar_tarea(id_r):
-    conexion = sqlite3.connect("data/historial.db")
+    conexion = sqlite3.connect(HISTORIAL_SQL)
     cursor = conexion.cursor()
 
     cursor.execute("SELECT * FROM papelera WHERE id = ?", (id_r,))
@@ -420,7 +409,7 @@ def resturar_tarea(id_r):
 
     guardar_tareas(tipo=tipo,tarea=restauar)
 
-    conexion = sqlite3.connect("data/historial.db")
+    conexion = sqlite3.connect(HISTORIAL_SQL)
     cursor = conexion.cursor()
     print(id_r)
     cursor.execute("""
@@ -436,7 +425,7 @@ def resturar_tarea(id_r):
     return
 
 def limpiar_tareas():
-    conexion = sqlite3.connect("data/gestor.db")
+    conexion = sqlite3.connect(GESTOR_SQL)
     cursor = conexion.cursor()
 
     cursor.execute("DELETE FROM tareas WHERE estado = ?", ('Completada',))
