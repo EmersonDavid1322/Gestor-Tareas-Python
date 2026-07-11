@@ -64,7 +64,7 @@ class TareaRutina(Tarea):
         hoy = datetime.now()
         nombres_dias = get_day_names('wide', locale='es')
         dia_hoy = nombres_dias[hoy.weekday()].lower()
-        
+
         if self.estado == f"Habito completado el {fecha_m}":
             estado = "Completada hoy"
             return f"| {self.nombre.title()} | {self.prioridad.title()} | {estado} | {self.hora} |"
@@ -107,8 +107,9 @@ class TareaRutina(Tarea):
         return True
     
     def disponible_hoy(self):
-        ahora = datetime.now()
-        dia_hoy = ahora.strftime('%A')
+        hoy = datetime.now()
+        nombres_dias = get_day_names('wide', locale='es')
+        dia_hoy = nombres_dias[hoy.weekday()].lower()
 
         for dia in self.dias:
             if dia == dia_hoy:
