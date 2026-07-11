@@ -79,7 +79,7 @@ Aplicación de escritorio para Linux que combina gestión de tareas, seguimiento
 
 ```bash
 git clone https://github.com/EmersonDavid1322/Gestor-Tareas-Python
-cd gestor-disciplina
+cd Gestor-Tareas-Python
 bash scripts/installer.sh
 ```
 
