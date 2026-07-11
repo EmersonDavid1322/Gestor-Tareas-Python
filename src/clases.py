@@ -1,10 +1,5 @@
 from datetime import datetime
-import locale
-
-try:
-    locale.setlocale(locale.LC_ALL, 'es_ES.UTF-8')
-except locale.Error:
-    locale.setlocale(locale.LC_ALL, 'Spanish_Spain')
+from babel.dates import get_day_names
 class Tarea:
     def __init__(self,id,creacion,estado,tipo,nombre, prioridad,hora):
         self.id = id
@@ -66,9 +61,10 @@ class TareaRutina(Tarea):
 
     def __str__(self):
         fecha_m = datetime.now().strftime("%d/%m/%Y")
-        ahora = datetime.now()
-        dia_hoy = ahora.strftime('%A')
-
+        hoy = datetime.now()
+        nombres_dias = get_day_names('wide', locale='es')
+        dia_hoy = nombres_dias[hoy.weekday()].lower()
+        
         if self.estado == f"Habito completado el {fecha_m}":
             estado = "Completada hoy"
             return f"| {self.nombre.title()} | {self.prioridad.title()} | {estado} | {self.hora} |"
