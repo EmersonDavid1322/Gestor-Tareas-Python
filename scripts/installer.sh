@@ -24,6 +24,13 @@ rm -rf "$BASE_DIR/build"
 rm -rf "$BASE_DIR/dist"
 rm -f "$BASE_DIR"/*.spec
 
+if python3 -c "import tkinter" &> /dev/null; then
+    echo "Tkinter está instalado."
+else
+    echo "Tkinter NO está instalado. Instalando..."
+    sudo pacman -S --noconfirm tk
+fi
+
 # 3.5. ACTIVAR EL ENTORNO VIRTUAL PARA EL SCRIPT
 echo "🌐 Activando entorno virtual..."
 if [ -f "$BASE_DIR/.venv/bin/activate" ]; then

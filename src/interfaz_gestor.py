@@ -206,6 +206,18 @@ class VentanaTareas(ctk.CTkToplevel):
                                         command=lambda tarea_i=tarea: self.mostrar_info_tarea(tarea_i))
             boton_info.pack(side="right", padx=10)
     
+    def mostrar_resultado(self, resultado, titulo_exito):
+        if resultado.exito:
+            messagebox.showinfo(titulo_exito, resultado.mensaje)
+
+            mensaje_racha = getattr(resultado, "mensaje_racha", None)
+            if mensaje_racha is not None:
+                messagebox.showinfo("Racha", mensaje_racha)
+
+            self.mostrar_tareas(filtro=filtro_todas)
+        else:
+            messagebox.showwarning(f"Error {titulo_exito}", resultado.mensaje)
+
     def mostrar_info_tarea(self,tarea):
         texto = tarea.info_completa()
         messagebox.showinfo(f"Detalles de {tarea.nombre}", texto)
@@ -216,32 +228,18 @@ class VentanaTareas(ctk.CTkToplevel):
 
     def actualizar_fallar(self,id_tarea,tipo):
         resultado = fallar_tarea(id_tarea,tipo)
-        if resultado.exito:
-            messagebox.showinfo("Fallar", resultado.mensaje)
-            self.mostrar_tareas(filtro=filtro_pendientes_hoy)
-        else:
-            messagebox.showwarning("Error Fallar", resultado.mensaje)
+        self.mostrar_resultado(resultado, "Fallar")
     
     def actualizar_completar(self,id_tarea,tipo):
         resultado = completar(id_tarea,tipo)
-        if resultado.exito:
-            messagebox.showinfo("Completar", resultado.mensaje)
-            if resultado.mensaje_racha is not None: 
-                messagebox.showinfo("Racha", resultado.mensaje_racha)
-            self.mostrar_tareas(filtro=filtro_pendientes_hoy)
-        else:
-            messagebox.showwarning("Error completar", resultado.mensaje)
+        self.mostrar_resultado(resultado, "Completar")
     
     def actualizar_eliminar(self,id_tarea,tipo):
         confirmacion = messagebox.askyesno("Eliminar", "¿Desea eliminar esta tarea?")
 
         if confirmacion:
             resultado = eliminar_tarea(id_tarea,tipo)
-            if resultado.exito:
-                messagebox.showinfo("Eliminar", resultado.mensaje)
-                self.mostrar_tareas(filtro=filtro_pendientes_hoy)
-            else:
-                messagebox.showwarning("Eliminar", resultado.mensaje)
+            self.mostrar_resultado(resultado, "Eliminar")
 
     def editar_tarea(self,id_tarea,tipo):
         confirmacion = messagebox.askyesno("Editar","¿Desea editar esta tarea?")
