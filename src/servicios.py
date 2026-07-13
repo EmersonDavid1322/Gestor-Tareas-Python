@@ -63,6 +63,7 @@ def completar(id,tipo):
     tareas, tareas_rutina = cargar_tareas()
 
     marcar_tarea = validar_tarea_id(id,tipo,tareas,tareas_rutina)
+    print(marcar_tarea)
     if marcar_tarea is None:
         return ResultadoCompletar(exito=False, mensaje="No se encontro la tarea", puntaje=0)
 

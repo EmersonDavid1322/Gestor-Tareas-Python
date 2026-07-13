@@ -135,6 +135,7 @@ def guardar_tareas(tipo,tarea):
             accion = "Se agrego una Tarea Rutina"
         
         tarea.id = cursor.lastrowid
+        conexion.commit()
         guardar_historial(tarea,accion)
 
 def guardar_historial(tarea,accion):
@@ -152,6 +153,7 @@ def guardar_historial(tarea,accion):
         """, (
             (tarea_historial,accion,fecha)
         ))
+        conexion.commit()
 
 def guardar_papelera(tarea):
     with conexion_bd(HISTORIAL_SQL) as conexion:
@@ -191,6 +193,7 @@ def guardar_papelera(tarea):
                 tarea.tipo,
                 accion_r
             ))
+        conexion.commit()
 
 def guardar_registros(tarea,estado,accion):
     fecha = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
@@ -206,6 +209,7 @@ def guardar_registros(tarea,estado,accion):
         """, (
             (tarea_tegistro,accion,fecha)
         ))
+        conexion.commit()
 
 def cargar_tareas():
     with conexion_bd(GESTOR_SQL) as conexion:
@@ -326,6 +330,8 @@ def estado_tarea(tarea):
                 accion = f"Se completo la Tarea Rutina, Racha: {tarea.racha}"
             elif "Fallida" in tarea.estado:
                 accion = f"Se fallo la Tarea Rutina"
+
+        conexion.commit()
         guardar_registros(tarea,tarea.estado,accion)
 
 
@@ -338,15 +344,14 @@ def eliminar_tarea_sql(tarea):
             DELETE FROM tareas
             WHERE id = ?
             """, (tarea.id,))
-            guardar_papelera(tarea)
-        
         else:
             cursor.execute("""
             DELETE FROM rutinas
             WHERE id = ?
             """, (tarea.id,))
 
-            guardar_papelera(tarea)
+        conexion.commit()
+        guardar_papelera(tarea)
 
 def resturar_tarea(id_r):
     with conexion_bd(HISTORIAL_SQL) as conexion:
@@ -391,6 +396,7 @@ def resturar_tarea(id_r):
                 DELETE FROM papelera
                 WHERE id = ?
                 """, (id_r,))
+            conexion.commit()
             messagebox.showinfo("Restaurar","Se a restaurado correctamente la tarrea")
             return
 
@@ -399,3 +405,4 @@ def limpiar_tareas():
         cursor = conexion.cursor()
 
         cursor.execute("DELETE FROM tareas WHERE estado = ?", ('Completada',))
+        conexion.commit()

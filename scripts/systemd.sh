@@ -10,7 +10,7 @@ mkdir -p "$USER_SYSTEMD_DIR"
 
 #limpiando anteirores servicios
 if [ -f "$HOME/.config/systemd/user/notificador.service" ]; then
-    sudo systemctl --use stop notificador.service|| true
+    systemctl --user stop notificador.service|| true
     systemctl --user disable notificador.service|| true
 
     rm -f "$HOME/.config/systemd/user/notificador.service"

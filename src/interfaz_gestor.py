@@ -214,7 +214,7 @@ class VentanaTareas(ctk.CTkToplevel):
             if mensaje_racha is not None:
                 messagebox.showinfo("Racha", mensaje_racha)
 
-            self.mostrar_tareas(filtro=filtro_todas)
+            self.mostrar_tareas(filtro=filtro_pendientes_hoy)
         else:
             messagebox.showwarning(f"Error {titulo_exito}", resultado.mensaje)
 
