@@ -242,7 +242,6 @@ def cargar_tareas():
         filas_rutina = cursor.fetchall()
 
         rutinas = []
-
         for fila in filas_rutina:
             rutina = TareaRutina(
                 id=fila[0],
